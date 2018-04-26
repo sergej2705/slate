@@ -1,0 +1,48 @@
+<h1 id='payload-project-und-bunch'>Payload, Project und Bunch</h1>
+<p>In einem API-Auftrag (Order) sind die Begriffe Payload, Project und Bunch charakteristisch:</p>
+<h2 id='payload'>Payload</h2>
+<p>Unter Payload verstehen sich die verfügbaren Bilder oder andere Binärdaten, die von den Processoren für das Rendering verwendet werden. Sie liegen im finalen Auftrag innerhalb des Zips und werden über ihren Dateinamen referenziert. Zusätzlich enthält ein Payload-Eintrag den Mimetype und es existieren optionale Metadaten, wie bspw. die Bildgröße.</p>
+<h2 id='project'>Project</h2>
+<p>Ein Project beschreibt einen semantischen Eintrag im Warenkorb. Für die Series-App bedeutet dies bspw. eine Polaroid-Fotobox für eine bestimmte Serie. Als essentielle Angaben sind am Project die gewünschte Anzahl, der zu verwendende Processor und der Identifier (bspw. eine UUID).</p>
+<h2 id='bunch'>Bunch</h2>
+<p>Die Eingabedaten für die Segmentierung und das Layouting im Processor sind die Bunches. Ein Bunch ist bspw. die Assoziation eines Payloads mit einem Project. Es kann aber auch noch bspw. einen zusätzlich zu verwendenden Text beschreiben. Der Bunch ist somit die semantische Klammer für ein domainspezifisches &quot;Ding&quot;. </p>
+
+<p>Im Series-App-Beispiel kann das ein einzelnes Polaroid oder eine Seite in einem Fotobuch sein. Der Processor entscheidet anhand der Bunches, wie viele Produkte oder Seiten er generieren kann. In der Segmentierungsphase dient dazu das bloße Wissen um die Existenz der BunchItems zzgl. Infos über die Bildgröße (s. Payload).</p>
+<h1 id='processor-carts-und-output'>Processor, Carts und Output</h1><h2 id='implementierungen'>Implementierungen</h2>
+<p>Das Herzstück von ToPhoto sind die Processoren. Diese sind immer domainspezifisch oder zumindest domainspezifisch parametrisiert. Für jeden Produkttyp gibt es eine Klassenhierarchie, die von einer generellen Oberklasse immer spezifischer bis hin zur Domainimplementierung führt und auf dem Weg immer weitere Funktionen und Parameter hinzufügt. </p>
+
+<p>Am Beispiel hier die Klassenhierarchie für ein <a href="https://app.nuclino.com/t/b/4d365a5e-449d-436b-a555-b14548fe0443">Wer ist König</a> 10x10 RuckZuck-Fotobuch:</p>
+
+<p><img src="https://files.nuclino.com/files/2ac3773e-b19c-4e91-a742-612758172c26/weristkoenig10x10rzhiearchie.png" alt="Weristkoenig10x10rzhiearchie" /></p>
+<h2 id='subcartitem-und-output'>SubcartItem und Output</h2>
+<p>Ein Processor bestimmt aufgrund der verfügbaren Bunches und deren BunchItems zu einem Project die SubcartItems. Diese beziehen sich immer auf eine spezielle SKU. Wenn ein Processor bspw. errechnet, dass 8 Fotoabzüge aus einem Projekt entstehen sollen, werden 8 SubcartItems erstellt. Die Items haben dabei sog. ProcessorIndices von 0 bis 7. Die vom Processor/Renderer erstellten Outputs haben wiederum einen ProcessorIndex von 0 bis 7. Über die Kombination von Project + ProcessorIndex erfolgt die Zuordnung beim Export zwischen SubcartItem und Output.</p>
+
+<p>Weil manche Produkte aus mehreren Dateien bestehen, enthält ein Output eine Liste von Dateien.</p>
+<h2 id='cart-und-subcart'>Cart und Subcart</h2>
+<p>Aufgrund der bereits beschriebenen SubcartItems ermittelt das System, welche Produzenten für diese Produkte zur Verfügung stehen. Dies ist das erste Segmentierungsmerkmal. Innerhalb der Produzentenimplementierungen werden diese Segmente bei Bedarf noch einmal ausgeteilt. Dies kann bspw. aufgrund unterschiedlicher Produktionsstandorte oder Versandmodalitäten geschehen.</p>
+<h1 id='renderer'>Renderer</h1>
+<p>Das Renderer-Framework ermöglicht es über High-Level-Methoden Grafiken zu erstellen. Bei den meisten Processoren wird über eine Zwischendatei im SVG-Format gearbeitet. SVGs ermöglichen dabei insbesondere die Verwendung von Schatten und Gruppierungen. Aus den SVGs werden anschließend die Pixelformate und oder PDFs erzeugt.</p>
+
+<p>Neben den reinen &quot;Malfunktionen&quot; ist zusätzlich ein  Szenengraph implementiert, der insbesondere einen Transformationsstack ermöglicht, um strukturiert Grafikbefehle einer kumulierten Transformation zu unterziehen.</p>
+<h2 id='methoden'>Methoden</h2>
+<ul>
+<li>drawImage(Image img, int x, int y, int width, int height)</li>
+<li>drawImage(Image img, int x, int y) </li>
+<li>drawString(String s, Color color, Font f, int x, int y) </li>
+<li>drawRoundedRect(Color color, int radius, float linewidth, int x, int y, int width, int height) </li>
+<li>drawImage(File img, int x, int y, int width, int height) </li>
+<li>fillRect(Color color, int x, int y, int width, int height) </li>
+<li>fillCircle(Color color, int x, int y, int diameter) </li>
+<li>fillRoundedRect(Color c, int radius, int x, int y, int width, int height)</li>
+<li>addShadowDefinition(String name, int size, int offsetX, int offsetY, double opacity)</li>
+<li>activateShadow(String name) deactivateShadow()</li>
+<li>transform(Point2D p)</li>
+<li>pushTransform(AffineTransform at) </li>
+<li>popTransform() </li>
+<li>pushRotation(double x, double y, double angle) </li>
+<li>pushRotation(double angle) </li>
+<li>pushTranslation(double x, double y) </li>
+<li>pushScale(double sx, double sy) </li>
+<li>pushClip(int x, int y, int width, int height) </li>
+<li>popClip()</li>
+</ul>

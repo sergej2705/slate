@@ -1,0 +1,77 @@
+<h2 id='title'><strong>Title</strong></h2>
+<p>&lt;<em>Additional information about your API call. Try to use verbs that match both request type (fetching vs modifying) and plurality (one vs multiple).</em>&gt;</p>
+
+<ul>
+<li><strong>URL</strong></li>
+</ul>
+
+<p>&lt;<em>The URL Structure (path only, no root url)</em>&gt;</p>
+
+<ul>
+<li><strong>Method:</strong></li>
+</ul>
+
+<p>&lt;<em>The request type</em>&gt;</p>
+
+<p><code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code></p>
+
+<ul>
+<li> <strong>URL Params</strong></li>
+</ul>
+
+<p>&lt;<em>If URL params exist, specify them in accordance with name mentioned in URL section. Separate into optional and required. Document data constraints.</em>&gt; </p>
+
+<p><strong>Required:</strong></p>
+
+<p><code>id=[integer]</code></p>
+
+<p><strong>Optional:</strong></p>
+
+<p><code>photo_id=[alphanumeric]</code></p>
+
+<ul>
+<li><strong>Data Params</strong></li>
+</ul>
+
+<p>&lt;<em>If making a post request, what should the body payload look like? URL Params rules apply here too.</em>&gt;</p>
+
+<ul>
+<li><strong>Success Response:</strong></li>
+</ul>
+
+<p>&lt;<em>What should the status code be on success and is there any returned data? This is useful when people need to to know what their callbacks should expect!</em>&gt;</p>
+
+<ul>
+<li><p><strong>Code:</strong> 200 <br />
+<strong>Content:</strong> <code>{ id : 12 }</code></p>
+
+<ul>
+<li><strong>Error Response:</strong></li>
+</ul></li>
+</ul>
+
+<p>&lt;<em>Most endpoints will have many ways they can fail. From unauthorized access, to wrongful parameters etc. All of those should be liste d here. It might seem repetitive, but it helps prevent assumptions from being made where they should be.</em>&gt;</p>
+
+<ul>
+<li><strong>Code:</strong> 401 UNAUTHORIZED <br />
+<strong>Content:</strong> <code>{ error : &quot;Log in&quot; }</code></li>
+</ul>
+
+<p>OR</p>
+
+<ul>
+<li><p><strong>Code:</strong> 422 UNPROCESSABLE ENTRY <br />
+<strong>Content:</strong> <code>{ error : &quot;Email Invalid&quot; }</code></p>
+
+<ul>
+<li><strong>Sample Call:</strong></li>
+</ul></li>
+</ul>
+
+<p>&lt;<em>Just a sample call to your endpoint in a runnable format ($.ajax call or a curl request) - this makes life easier and more predictable.</em>&gt; </p>
+
+<ul>
+<li><strong>Notes:</strong></li>
+</ul>
+
+<p>&lt;<em>This is where all uncertainties, commentary, discussion etc. can go. I recommend timestamping and identifying oneself when leaving comments here.</em>&gt; </p>

@@ -1,0 +1,48 @@
+<h2 id='cancel-order'>Cancel Order</h2>
+<p>Storniert eine Order</p>
+<h3 id='url'>URL</h3>
+<p><code>/v1/orders/:orderid</code></p>
+<h3 id='method'>Method</h3>
+<p><code>DELETE</code></p>
+<h3 id='accept'>Accept</h3>
+<p><code>application/json</code></p>
+<h3 id='content-type'>Content-Type</h3>
+<p><code>application/json</code></p>
+<h3 id='url-params'>URL Params</h3>
+<p><code>orderId=[long]</code></p>
+<h3 id='data-params'>Data Params</h3>
+<p>Order als JSON</p>
+<h3 id='success-response'>Success Response</h3><h4 id='code'>Code</h4>
+<p><code>204</code></p>
+<h4 id='content'>Content</h4>
+<p><em>No Content</em></p>
+<h3 id='error-response'>Error Response</h3>
+<ul>
+<li><p><strong>404 NOT FOUND</strong>
+Keine Order gefunden</p>
+
+<p>{
+    &quot;status&quot;: &quot;NOT_FOUND&quot;,
+    &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+    &quot;message&quot;: &quot;Order not found&quot;,
+    &quot;debugMessage&quot;: &quot;Order not found&quot;
+  }</p></li>
+<li><p><strong>409 CONFLICT</strong>
+Die Order kann nicht (mehr) storniert werden</p>
+
+<p>{
+    &quot;status&quot;: &quot;CONFLICT&quot;,
+    &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+    &quot;message&quot;: &quot;Only temporary orders can receive data&quot;,
+    &quot;debugMessage&quot;: &quot;Only temporary orders can receive data&quot;
+  }</p></li>
+<li><p><strong>410 GONE</strong>
+Die Order ist bereits storniert</p>
+
+<p>{
+    &quot;status&quot;: &quot;GONE&quot;,
+    &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+    &quot;message&quot;: &quot;Order is canceled&quot;,
+    &quot;debugMessage&quot;: &quot;Order is canceled&quot;
+  }</p></li>
+</ul>

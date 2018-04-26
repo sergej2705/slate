@@ -1,0 +1,50 @@
+<h2 id='ubersicht'>Übersicht</h2>
+<ul>
+<li><a href="Konzepte">Konzepte</a></li>
+<li><a href="Modell">Modell</a></li>
+<li><a href="Ablauf">Ablauf</a></li>
+</ul>
+<h3 id='rest'>REST</h3>
+<ul>
+<li><p>Order</p>
+
+<ul>
+<li><a href="Order_Segment">Segment</a></li>
+<li><a href="Order_Checkout">Checkout</a></li>
+<li><a href="Order_Finalize">Finalize</a></li>
+<li><a href="Order_Read">Read</a></li>
+<li><a href="Order_Delete">Cancel</a></li>
+<li><a href="Order_Acknowledge">Acknowledge Status</a></li>
+</ul></li>
+<li><p>Portal</p>
+
+<ul>
+<li><a href="Portal_Unacknowledged">Unacknowledged Orders</a></li>
+<li><a href="Portal_UnacknowledgedByStatus">Unacknowledged Orders with Status</a></li>
+</ul></li>
+</ul>
+<h3 id='standard-error-responses'>Standard Error Responses</h3><h4 id='authentifizierung'>Authentifizierung</h4>
+<p>Alle Aufrufe an die to.photo API müssen authorisiert sein.</p>
+
+<p>Aufrufe ohne valide Zugangsdaten werden mit einem der folgenden Fehler beantwortet.</p>
+
+<ul>
+<li><p><strong>401 UNAUTHORIZED</strong>
+Der Benutzer ist nicht eingeloggt</p></li>
+<li><p><strong>403 FORBIDDEN</strong>
+Der Benutzer ist nicht berechtigt</p></li>
+</ul>
+<h4 id='server-fehler'>Server Fehler</h4>
+<ul>
+<li><strong>500 INTERNAL SERVER ERROR</strong>
+Bei unerwarteten Fehlern zur Laufzeit antwortet der Server mit einem <em>Internal Server Error</em> ohne weitere Details.</li>
+</ul>
+
+<p><em>Der Fehler wird unverzüglich an den Adminstrator gemeldet!</em></p>
+
+<p>{
+          &quot;status&quot;: &quot;INTERNAL_SERVER_ERROR&quot;,
+          &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+          &quot;message&quot;: &quot;Unexpected error&quot;,
+          &quot;debugMessage&quot;: null
+      }</p>

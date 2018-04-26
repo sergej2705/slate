@@ -1,0 +1,116 @@
+<h2 id='read-order'>Read Order</h2>
+<p>Lade eine Order</p>
+<h3 id='url'>URL</h3>
+<p><code>/v1/orders/:orderid</code></p>
+<h3 id='method'>Method</h3>
+<p><code>GET</code></p>
+<h3 id='content-type'>Content-Type</h3>
+<p><code>application/json</code></p>
+<h3 id='url-params'>URL Params</h3>
+<p><code>orderId=[long]</code></p>
+<h3 id='data-params'>Data Params</h3>
+<p><em>keine</em></p>
+<h3 id='success-response'>Success Response</h3><h4 id='code'>Code</h4>
+<p><code>200</code></p>
+<h4 id='content'>Content</h4>
+<p>{
+      &quot;orderId&quot;: &quot;270&quot;,
+      &quot;bunches&quot;: [
+        {
+          &quot;items&quot;: [
+            {
+              &quot;mimetype&quot;: &quot;application/zip&quot;,
+              &quot;reference&quot;: &quot;custom1.zip&quot;,
+              &quot;type&quot;: &quot;Payload&quot;
+            }
+          ],
+          &quot;project&quot;: &quot;custom1&quot;
+        }
+      ],
+      &quot;cart&quot;: {
+        &quot;subcarts&quot;: [
+          {
+            &quot;items&quot;: [
+              {
+                &quot;count&quot;: 1,
+                &quot;price&quot;: 11900,
+                &quot;processorIndex&quot;: 0,
+                &quot;project&quot;: &quot;custom1&quot;,
+                &quot;sku&quot;: &quot;14631000&quot;
+              }
+            ],
+            &quot;orderId&quot;: 123,
+            &quot;paymentOrderId&quot;: &quot;testorder&quot;,
+            &quot;producer&quot;: &quot;Allcop&quot;,
+            &quot;producerOrderId&quot;: 123,
+            &quot;producerOrderUniqueIdentifier&quot;: &quot;94440000123&quot;,
+            &quot;shipping&quot;: 3450
+          }
+        ]
+      },
+      &quot;customer&quot;: {
+        &quot;billingaddress&quot;: {
+          &quot;city&quot;: &quot;Musterstadt&quot;,
+          &quot;country&quot;: &quot;DE&quot;,
+          &quot;firstname&quot;: &quot;Max&quot;,
+          &quot;lastname&quot;: &quot;Mustermann&quot;,
+          &quot;street&quot;: &quot;Musterstrasse 14&quot;,
+          &quot;zipcode&quot;: &quot;12345&quot;
+        },
+        &quot;deliveryaddress&quot;: {
+          &quot;city&quot;: &quot;Musterstadt&quot;,
+          &quot;country&quot;: &quot;DE&quot;,
+          &quot;firstname&quot;: &quot;Max&quot;,
+          &quot;lastname&quot;: &quot;Mustermann&quot;,
+          &quot;street&quot;: &quot;Musterstrasse 14&quot;,
+          &quot;zipcode&quot;: &quot;12345&quot;
+        },
+        &quot;email&quot;: &quot;test@test.test&quot;
+      },
+      &quot;mandator&quot;: 0,
+      &quot;orderdate&quot;: 1518800013000,
+      &quot;payload&quot;: [
+        {
+          &quot;mimetype&quot;: &quot;application/zip&quot;,
+          &quot;name&quot;: &quot;custom1.zip&quot;
+        }
+      ],
+      &quot;portal&quot;: 1000,
+      &quot;projects&quot;: [
+        {
+          &quot;count&quot;: 1,
+          &quot;identifier&quot;: &quot;custom1&quot;,
+          &quot;processor&quot;: {
+            &quot;identifier&quot;: &quot;photo.to.amazonmarketplace.AmazonStandardCupProcessor&quot;,
+            &quot;metadata&quot;: {
+              &quot;sku&quot;: &quot;14631000&quot;
+            }
+          },
+          &quot;title&quot;: &quot;Tasse (14631000)&quot;
+        }
+      ],
+      &quot;status&quot;: &quot;Enqueued&quot;,
+      &quot;statusHistory&quot;: [
+      ]
+    }</p>
+<h3 id='error-response'>Error Response</h3>
+<ul>
+<li><p><strong>404 NOT FOUND</strong>
+Keine Order gefunden</p>
+
+<p>{
+    &quot;status&quot;: &quot;NOT_FOUND&quot;,
+    &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+    &quot;message&quot;: &quot;Order not found&quot;,
+    &quot;debugMessage&quot;: &quot;Order not found&quot;
+  }</p></li>
+<li><p><strong>410 GONE</strong>
+Die Order ist storniert</p>
+
+<p>{
+    &quot;status&quot;: &quot;GONE&quot;,
+    &quot;timestamp&quot;: &quot;2018-01-01 12:34:56.789&quot;,
+    &quot;message&quot;: &quot;Order is canceled&quot;,
+    &quot;debugMessage&quot;: &quot;Order is canceled&quot;
+  }</p></li>
+</ul>
