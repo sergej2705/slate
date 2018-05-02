@@ -1,26 +1,35 @@
 # Orders
 
+## Resource
+
+The `order` resource is the central resource of to.photo. It's parameters are listed in the following table.
+
+| Parameter | Mandatory | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| locale    | true      | Locale for the checkout. Determines the language that is used within the checkout website. Accepted values follow the POSIX locale schema and use [ISO 639](https://en.wikipedia.org/wiki/ISO_639) language codes and optionally [ISO 3166-1 ALPHA-2](https://en.wikipedia.org/wiki/ISO_3166-1) country codes, for example `de` or `fr_FR`. The global default, if no matching language is found, is German. Locale definitions are not case-sensitive. |
+| id        | false     | A UUID identifying this checkout. The UUID will be generated on the checkout server side. If one is contained in a crate request, it will be ignored.                                                                                                                                                                                                                                                                                                        |
+| order_url | true      | Callback URL to report a successful order. The body of this call with contain a complete [order](#orders) resource. This URL will be called after a user finishes the checkout. The API will try to get through to this URL for up to 12 hours. If no successful request can be performed within this time range, the order will be canceled.                                                                                                            |
+| cart      | true      | See [cart](#cart) for more details.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| customer  | false     | See [customer](#customer) for more details.
+
+
+
 ## Create Order
 
-Initialise a new order
+Use the `order` resource to initialise a new order. Upon initialization it is not necessary to provide all details of an order. All of the details are added during an `order`s lifecycle.
 
-### HTTP Request
-`POST /v1/orders`
+> Request
 
-### Accept
-`application/json`
+```yaml
+Path:   POST /v1/orders
+Headers: Accept: application/json
+Headers: Content-Type: application/json
+```
+> Response
 
-### Content-Type
-`application/json`
-
-### Data Params
-Order als JSON
-
-### Success Response
-#### Code
-`200`
-
-#### Content
+```yaml
+Headers: Content-Type: application/json
+```
 
 ```json
 {
@@ -105,9 +114,11 @@ Order als JSON
 }
 ```
 
-### Error Response
 * **422 UNPROCESSABLE ENTITY**
-  Die Order führt zu mehr als 9 Subcarts.
+Die Order führt zu mehr als 9 Subcarts.
+
+
+> Error Response
 
 ```json
 {
