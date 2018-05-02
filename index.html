@@ -228,6 +228,9 @@
             <a href="#orders" class="toc-h1 toc-link" data-title="orders">Orders</a>
               <ul class="toc-list-h2">
                   <li>
+                    <a href="#resource" class="toc-h2 toc-link" data-title="resource">Resource</a>
+                  </li>
+                  <li>
                     <a href="#create-order" class="toc-h2 toc-link" data-title="create-order">Create Order</a>
                   </li>
                   <li>
@@ -268,14 +271,161 @@
 <p>to.photo expects for the Basic Auth to be included in all API requests to the server in a header that looks like the following:</p>
 
 <p><code>Authorization: yourkeyhere</code></p>
-<h1 id='orders'>Orders</h1><h2 id='create-order'>Create Order</h2>
-<p>Initialise a new order</p>
+<h1 id='orders'>Orders</h1><h2 id='resource'>Resource</h2>
+<p>The <code>order</code> resource is the central resource of to.photo. It&#39;s parameters are listed in the following table.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Mandatory</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>locale</td>
+<td>true</td>
+<td>Locale for the checkout. Determines the language that is used within the checkout website. Accepted values follow the POSIX locale schema and use <a href="https://en.wikipedia.org/wiki/ISO_639">ISO 639</a> language codes and optionally <a href="https://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1 ALPHA-2</a> country codes, for example <code>de</code> or <code>fr_FR</code>. The global default, if no matching language is found, is German. Locale definitions are not case-sensitive.</td>
+</tr>
+<tr>
+<td>id</td>
+<td>false</td>
+<td>A UUID identifying this checkout. The UUID will be generated on the checkout server side. If one is contained in a crate request, it will be ignored.</td>
+</tr>
+<tr>
+<td>order_url</td>
+<td>true</td>
+<td>Callback URL to report a successful order. The body of this call with contain a complete <a href="#orders">order</a> resource. This URL will be called after a user finishes the checkout. The API will try to get through to this URL for up to 12 hours. If no successful request can be performed within this time range, the order will be canceled.</td>
+</tr>
+<tr>
+<td>cart</td>
+<td>true</td>
+<td>See <a href="#cart">cart</a> for more details.</td>
+</tr>
+<tr>
+<td>customer</td>
+<td>false</td>
+<td>See <a href="#customer">customer</a> for more details.</td>
+</tr>
+</tbody></table>
+<h2 id='create-order'>Create Order</h2>
+<p>Use the <code>order</code> resource to initialise a new order. Upon initialization it is not necessary to provide all details of an order. All of the details are added during an <code>order</code>s lifecycle.</p>
+
+<blockquote>
+<p>Request</p>
+</blockquote>
+<pre class="highlight yaml tab-yaml"><code><span class="na">Path</span><span class="pi">:</span>   <span class="s">POST /v1/orders</span>
+<span class="na">Headers</span><span class="pi">:</span> <span class="na">Accept</span><span class="pi">:</span> <span class="s">application/json</span>
+<span class="na">Headers</span><span class="pi">:</span> <span class="na">Content-Type</span><span class="pi">:</span> <span class="s">application/json</span>
+</code></pre>
+<blockquote>
+<p>Response</p>
+</blockquote>
+<pre class="highlight yaml tab-yaml"><code><span class="na">Headers</span><span class="pi">:</span> <span class="na">Content-Type</span><span class="pi">:</span> <span class="s">application/json</span>
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"270"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bunches"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"reference"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Payload"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"cart"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"subcarts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mi">11900</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"processorIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14631000"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"paymentOrderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"testorder"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"producer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allcop"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"producerOrderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"producerOrderUniqueIdentifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"94440000123"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"shipping"</span><span class="p">:</span><span class="w"> </span><span class="mi">3450</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"customer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"billingaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstadt"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mustermann"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstrasse 14"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12345"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"deliveryaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstadt"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mustermann"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstrasse 14"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12345"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test@test.test"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"mandator"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"orderdate"</span><span class="p">:</span><span class="w"> </span><span class="mi">1518800013000</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"payload"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"portal"</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"projects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"processor"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"photo.to.amazonmarketplace.AmazonStandardCupProcessor"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14631000"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tasse (14631000)"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Enqueued"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"statusHistory"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<ul>
+<li><strong>422 UNPROCESSABLE ENTITY</strong>
+Die Order führt zu mehr als 9 Subcarts.</li>
+</ul>
+
+<blockquote>
+<p>Error Response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UNPROCESSABLE_ENTITY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"More than 9 Subcarts are not allowed"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"More than 9 Subcarts are not allowed"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h2 id='checkout-order'>Checkout Order</h2>
+<p>Reichere Order um Checkoutdaten an</p>
 <h3 id='http-request'>HTTP Request</h3>
-<p><code>POST /v1/orders</code></p>
+<p><code>POST /v1/orders/:orderid/checkout</code></p>
 <h3 id='accept'>Accept</h3>
 <p><code>application/json</code></p>
 <h3 id='content-type'>Content-Type</h3>
 <p><code>application/json</code></p>
+<h3 id='url-params'>URL Params</h3>
+<p><code>orderId=[long]</code></p>
 <h3 id='data-params'>Data Params</h3>
 <p>Order als JSON</p>
 <h3 id='success-response'>Success Response</h3><h4 id='code'>Code</h4>
@@ -362,27 +512,48 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h3 id='error-response'>Error Response</h3>
 <ul>
-<li><strong>422 UNPROCESSABLE ENTITY</strong>
-Die Order führt zu mehr als 9 Subcarts.</li>
+<li><strong>404 NOT FOUND</strong>
+No order found</li>
 </ul>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UNPROCESSABLE_ENTITY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NOT_FOUND"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"More than 9 Subcarts are not allowed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"More than 9 Subcarts are not allowed"</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Order not found"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Order not found"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='checkout-order'>Checkout Order</h2>
-<p>Reichere Order um Checkoutdaten an</p>
+</span></code></pre>
+<ul>
+<li><strong>409 CONFLICT</strong>
+The order is not temporary (anymore) and can not be changed.</li>
+</ul>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CONFLICT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Only temporary orders can receive checkout data"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Only temporary orders can receive checkout data"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p><em>or:</em></p>
+
+<p>The carts are different, please get the actual cart from [order get].</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CONFLICT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Carts are different"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Carts are different"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h2 id='finalize-order'>Finalize Order</h2>
+<p>Finalize the order and send it to production</p>
 <h3 id='http-request-2'>HTTP Request</h3>
-<p><code>POST /v1/orders/:orderid/checkout</code></p>
+<p><code>POST /v1/orders/:orderId/data</code></p>
 <h3 id='accept-2'>Accept</h3>
-<p><code>application/json</code></p>
+<p><code>application/zip</code></p>
 <h3 id='content-type-2'>Content-Type</h3>
 <p><code>application/json</code></p>
-<h3 id='url-params'>URL Params</h3>
+<h3 id='url-params-2'>URL Params</h3>
 <p><code>orderId=[long]</code></p>
 <h3 id='data-params-2'>Data Params</h3>
-<p>Order als JSON</p>
+<p><code>file=Payloads als Zipfile</code></p>
 <h3 id='success-response-2'>Success Response</h3><h4 id='code-2'>Code</h4>
 <p><code>200</code></p>
 <h4 id='content-2'>Content</h4><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
@@ -468,132 +639,6 @@ Die Order führt zu mehr als 9 Subcarts.</li>
 </span></code></pre><h3 id='error-response-2'>Error Response</h3>
 <ul>
 <li><strong>404 NOT FOUND</strong>
-No order found</li>
-</ul>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NOT_FOUND"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Order not found"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Order not found"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<ul>
-<li><strong>409 CONFLICT</strong>
-The order is not temporary (anymore) and can not be changed.</li>
-</ul>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CONFLICT"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Only temporary orders can receive checkout data"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Only temporary orders can receive checkout data"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p><em>or:</em></p>
-
-<p>The carts are different, please get the actual cart from [order get].</p>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CONFLICT"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Carts are different"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"debugMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Carts are different"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='finalize-order'>Finalize Order</h2>
-<p>Finalize the order and send it to production</p>
-<h3 id='http-request-3'>HTTP Request</h3>
-<p><code>POST /v1/orders/:orderId/data</code></p>
-<h3 id='accept-3'>Accept</h3>
-<p><code>application/zip</code></p>
-<h3 id='content-type-3'>Content-Type</h3>
-<p><code>application/json</code></p>
-<h3 id='url-params-2'>URL Params</h3>
-<p><code>orderId=[long]</code></p>
-<h3 id='data-params-3'>Data Params</h3>
-<p><code>file=Payloads als Zipfile</code></p>
-<h3 id='success-response-3'>Success Response</h3><h4 id='code-3'>Code</h4>
-<p><code>200</code></p>
-<h4 id='content-3'>Content</h4><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"270"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"bunches"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-          </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"reference"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Payload"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-      </span><span class="p">],</span><span class="w">
-      </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"cart"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"subcarts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-          </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mi">11900</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"processorIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14631000"</span><span class="w">
-          </span><span class="p">}</span><span class="w">
-        </span><span class="p">],</span><span class="w">
-        </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"paymentOrderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"testorder"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"producer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allcop"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"producerOrderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"producerOrderUniqueIdentifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"94440000123"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"shipping"</span><span class="p">:</span><span class="w"> </span><span class="mi">3450</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"customer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"billingaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstadt"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mustermann"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstrasse 14"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12345"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"deliveryaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstadt"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mustermann"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstrasse 14"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12345"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test@test.test"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"mandator"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"orderdate"</span><span class="p">:</span><span class="w"> </span><span class="mi">1518800013000</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"payload"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"portal"</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"projects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"processor"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"photo.to.amazonmarketplace.AmazonStandardCupProcessor"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-          </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14631000"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tasse (14631000)"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Enqueued"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"statusHistory"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h3 id='error-response-3'>Error Response</h3>
-<ul>
-<li><strong>404 NOT FOUND</strong>
 Keine Order gefunden</li>
 </ul>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
@@ -615,7 +660,7 @@ Die Order ist nicht (mehr) temporär</li>
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h2 id='order-status-acknowledge'>Order Status Acknowledge</h2>
 <p>Acknowledge an order status as processed</p>
-<h3 id='http-request-4'>HTTP Request</h3>
+<h3 id='http-request-3'>HTTP Request</h3>
 <p><code>PUT /v1/orders/:orderid/status</code></p>
 <h3 id='url-params-3'>URL Params</h3>
 <table><thead>
@@ -631,18 +676,18 @@ Die Order ist nicht (mehr) temporär</li>
 <td>The ID of the order which status to acknowledge</td>
 </tr>
 </tbody></table>
-<h3 id='accept-4'>Accept</h3>
+<h3 id='accept-3'>Accept</h3>
 <p><code>application/json</code></p>
-<h3 id='content-type-4'>Content-Type</h3>
+<h3 id='content-type-3'>Content-Type</h3>
 <p><code>application/json</code></p>
-<h3 id='data-params-4'>Data Params</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+<h3 id='data-params-3'>Data Params</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
 
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <p>StatusEntry als JSON</p>
-<h3 id='success-response-4'>Success Response</h3><h4 id='code-4'>Code</h4>
+<h3 id='success-response-3'>Success Response</h3><h4 id='code-3'>Code</h4>
 <p><code>200</code></p>
-<h4 id='content-4'>Content</h4><h3 id='error-response-4'>Error Response</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+<h4 id='content-3'>Content</h4><h3 id='error-response-3'>Error Response</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NOT_FOUND"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01 12:34:56.789"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Order not found"</span><span class="p">,</span><span class="w">
