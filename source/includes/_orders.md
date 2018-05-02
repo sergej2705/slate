@@ -16,12 +16,130 @@ The `order` resource is the central resource of to.photo. It's parameters are li
 
 ## Create Order
 
-Use the `order` resource to initialise a new order. Upon initialization it is not necessary to provide all details of an order. All of the details are added during an `order`s lifecycle.
-
 > Request
 
 ```yaml
 Path:   POST /v1/orders
+Headers: Accept: application/json
+Headers: Content-Type: application/json
+```
+
+> Response
+
+```yaml
+Headers: Content-Type: application/json
+```
+
+```json
+{
+  "orderId": "270",
+  "bunches": [
+    {
+      "items": [
+        {
+          "mimetype": "application/zip",
+          "reference": "custom1.zip",
+          "type": "Payload"
+        }
+      ],
+      "project": "custom1"
+    }
+  ],
+  "cart": {
+    "subcarts": [
+      {
+        "items": [
+          {
+            "count": 1,
+            "price": 11900,
+            "processorIndex": 0,
+            "project": "custom1",
+            "sku": "14631000"
+          }
+        ],
+        "orderId": 123,
+        "paymentOrderId": "testorder",
+        "producer": "Allcop",
+        "producerOrderId": 123,
+        "producerOrderUniqueIdentifier": "94440000123",
+        "shipping": 3450
+      }
+    ]
+  },
+  "customer": {
+    "billingaddress": {
+      "city": "Musterstadt",
+      "country": "DE",
+      "firstname": "Max",
+      "lastname": "Mustermann",
+      "street": "Musterstrasse 14",
+      "zipcode": "12345"
+    },
+    "deliveryaddress": {
+      "city": "Musterstadt",
+      "country": "DE",
+      "firstname": "Max",
+      "lastname": "Mustermann",
+      "street": "Musterstrasse 14",
+      "zipcode": "12345"
+    },
+    "email": "test@test.test"
+  },
+  "mandator": 0,
+  "orderdate": 1518800013000,
+  "payload": [
+    {
+      "mimetype": "application/zip",
+      "name": "custom1.zip"
+    }
+  ],
+  "portal": 1000,
+  "projects": [
+    {
+      "count": 1,
+      "identifier": "custom1",
+      "processor": {
+        "identifier": "photo.to.amazonmarketplace.AmazonStandardCupProcessor",
+        "metadata": {
+          "sku": "14631000"
+        }
+      },
+      "title": "Tasse (14631000)"
+    }
+  ],
+  "status": "Enqueued",
+  "statusHistory": [
+  ]
+}
+```
+
+Use the `order` resource to initialise a new order. Upon initialization it is not necessary to provide all details of an order. All of the details are added during an `order`s lifecycle.
+
+### Error Response
+
+* **422 UNPROCESSABLE ENTITY**
+
+    The order would lead to more then 9 Subcarts.
+
+> Error Response
+
+```json
+{
+  "status": "UNPROCESSABLE_ENTITY",
+  "timestamp": "2018-01-01 12:34:56.789",
+  "message": "More than 9 Subcarts are not allowed",
+  "debugMessage": "More than 9 Subcarts are not allowed"
+}
+```
+
+
+
+## Checkout Order
+
+> Request
+
+```yaml
+Path:   POST /v1/orders/:orderid/checkout
 Headers: Accept: application/json
 Headers: Content-Type: application/json
 ```
@@ -114,134 +232,16 @@ Headers: Content-Type: application/json
 }
 ```
 
-* **422 UNPROCESSABLE ENTITY**
-Die Order führt zu mehr als 9 Subcarts.
-
-
-> Error Response
-
-```json
-{
-  "status": "UNPROCESSABLE_ENTITY",
-  "timestamp": "2018-01-01 12:34:56.789",
-  "message": "More than 9 Subcarts are not allowed",
-  "debugMessage": "More than 9 Subcarts are not allowed"
-}
-```
-
-
-
-## Checkout Order
-
-Reichere Order um Checkoutdaten an
-
-### HTTP Request
-`POST /v1/orders/:orderid/checkout`
-
-### Accept
-`application/json`
-
-### Content-Type
-`application/json`
+After initialization you will need to enrich the order with checkout data. This contains all data collected in the checkout process.
 
 ### URL Params
 `orderId=[long]`
 
-### Data Params
-Order als JSON
-
-### Success Response
-#### Code
-`200`
-
-#### Content
-
-```json
-{
-  "orderId": "270",
-  "bunches": [
-    {
-      "items": [
-        {
-          "mimetype": "application/zip",
-          "reference": "custom1.zip",
-          "type": "Payload"
-        }
-      ],
-      "project": "custom1"
-    }
-  ],
-  "cart": {
-    "subcarts": [
-      {
-        "items": [
-          {
-            "count": 1,
-            "price": 11900,
-            "processorIndex": 0,
-            "project": "custom1",
-            "sku": "14631000"
-          }
-        ],
-        "orderId": 123,
-        "paymentOrderId": "testorder",
-        "producer": "Allcop",
-        "producerOrderId": 123,
-        "producerOrderUniqueIdentifier": "94440000123",
-        "shipping": 3450
-      }
-    ]
-  },
-  "customer": {
-    "billingaddress": {
-      "city": "Musterstadt",
-      "country": "DE",
-      "firstname": "Max",
-      "lastname": "Mustermann",
-      "street": "Musterstrasse 14",
-      "zipcode": "12345"
-    },
-    "deliveryaddress": {
-      "city": "Musterstadt",
-      "country": "DE",
-      "firstname": "Max",
-      "lastname": "Mustermann",
-      "street": "Musterstrasse 14",
-      "zipcode": "12345"
-    },
-    "email": "test@test.test"
-  },
-  "mandator": 0,
-  "orderdate": 1518800013000,
-  "payload": [
-    {
-      "mimetype": "application/zip",
-      "name": "custom1.zip"
-    }
-  ],
-  "portal": 1000,
-  "projects": [
-    {
-      "count": 1,
-      "identifier": "custom1",
-      "processor": {
-        "identifier": "photo.to.amazonmarketplace.AmazonStandardCupProcessor",
-        "metadata": {
-          "sku": "14631000"
-        }
-      },
-      "title": "Tasse (14631000)"
-    }
-  ],
-  "status": "Enqueued",
-  "statusHistory": [
-  ]
-}
-```
-
 ### Error Response
+
 * **404 NOT FOUND**
-No order found
+
+    No order found
 
 ```json
 {
@@ -253,7 +253,12 @@ No order found
 ```
 
 * **409 CONFLICT**
-The order is not temporary (anymore) and can not be changed.
+
+    The order is not temporary (anymore) and can not be changed.
+
+    _or:_
+
+    The carts are different, please get the actual cart from [order get](#read-order).
 
 ```json
 {
@@ -263,10 +268,6 @@ The order is not temporary (anymore) and can not be changed.
   "debugMessage": "Only temporary orders can receive checkout data"
 }
 ```
-
-_or:_
-
-The carts are different, please get the actual cart from [order get].
 
 ```json
 {
@@ -281,28 +282,23 @@ The carts are different, please get the actual cart from [order get].
 
 ## Finalize Order
 
-Finalize the order and send it to production
+> Request
 
-### HTTP Request
-`POST /v1/orders/:orderId/data`
+```yaml
+Path:   POST /v1/orders/:orderid/data
+Headers: Accept: application/zip
+Headers: Content-Type: application/json
+```
 
-### Accept
-`application/zip`
+> Response
 
-### Content-Type
-`application/json`
+```yaml
+Headers: Content-Type: application/json
+```
 
 ### URL Params
 `orderId=[long]`
 
-### Data Params
-`file=Payloads als Zipfile`
-
-### Success Response
-#### Code
-`200`
-
-#### Content
 ```json
 {
   "orderId": "270",
@@ -386,9 +382,14 @@ Finalize the order and send it to production
 }
 ```
 
+After all you need to finalize the order and send it to production.
+
+Therefore you send all the payload image data, packaged as a ZIP archive, to the server. The successful upload will trigger the production process, no further call is needed.
+
 ### Error Response
 * **404 NOT FOUND**
-  Keine Order gefunden
+
+    No order found
 
 ```json
 {
@@ -400,7 +401,8 @@ Finalize the order and send it to production
 ```
 
 * **409 CONFLICT**
-  Die Order ist nicht (mehr) temporär
+
+    The order is not temporary (anymore) and can not be changed.
 
 ```json
 {
@@ -415,35 +417,25 @@ Finalize the order and send it to production
 
 ## Order Status Acknowledge
 
-Acknowledge an order status as processed
+> Request
 
-### HTTP Request
-`PUT /v1/orders/:orderid/status`
+```yaml
+Path:   PUT /v1/orders/:orderid/status
+Headers: Accept: application/json
+Headers: Content-Type: application/json
+```
+> Response
+
+```yaml
+Headers: Content-Type: application/json
+```
+
+Acknowledge an order status as processed
 
 ### URL Params
 Parameter | Type | Description
 --------- | -----|------------
 orderid | long | The ID of the order which status to acknowledge
-
-### Accept
-`application/json`
-
-### Content-Type
-`application/json`
-
-### Data Params
-```json
-{
-  
-}
-```
-StatusEntry als JSON
-
-### Success Response
-#### Code
-`200`
-
-#### Content
 
 ### Error Response
 ```json
@@ -454,8 +446,10 @@ StatusEntry als JSON
   "debugMessage": "Order not found"
 }
 ```
-#### 404 NOT FOUND
-  Keine Order gefunden
+
+* **404 NOT FOUND**
+
+    No order found
 
 
 ```json
@@ -467,7 +461,138 @@ StatusEntry als JSON
 }
 ```
 
-#### 409 CONFLICT
-  Die Status-Eintrag kann nicht bestätigt werden
+* **409 CONFLICT**
+
+    The status entry can not be acknowledged
 
 
+
+## Read Order
+
+> Request
+
+```yaml
+Path:   GET /v1/orders/:orderid
+Headers: Accept: application/json
+Headers: Content-Type: application/json
+```
+> Response
+
+```yaml
+Headers: Content-Type: application/json
+```
+
+```json
+{
+  "orderId": "270",
+  "bunches": [
+    {
+      "items": [
+        {
+          "mimetype": "application/zip",
+          "reference": "custom1.zip",
+          "type": "Payload"
+        }
+      ],
+      "project": "custom1"
+    }
+  ],
+  "cart": {
+    "subcarts": [
+      {
+        "items": [
+          {
+            "count": 1,
+            "price": 11900,
+            "processorIndex": 0,
+            "project": "custom1",
+            "sku": "14631000"
+          }
+        ],
+        "orderId": 123,
+        "paymentOrderId": "testorder",
+        "producer": "Allcop",
+        "producerOrderId": 123,
+        "producerOrderUniqueIdentifier": "94440000123",
+        "shipping": 3450
+      }
+    ]
+  },
+  "customer": {
+    "billingaddress": {
+      "city": "Musterstadt",
+      "country": "DE",
+      "firstname": "Max",
+      "lastname": "Mustermann",
+      "street": "Musterstrasse 14",
+      "zipcode": "12345"
+    },
+    "deliveryaddress": {
+      "city": "Musterstadt",
+      "country": "DE",
+      "firstname": "Max",
+      "lastname": "Mustermann",
+      "street": "Musterstrasse 14",
+      "zipcode": "12345"
+    },
+    "email": "test@test.test"
+  },
+  "mandator": 0,
+  "orderdate": 1518800013000,
+  "payload": [
+    {
+      "mimetype": "application/zip",
+      "name": "custom1.zip"
+    }
+  ],
+  "portal": 1000,
+  "projects": [
+    {
+      "count": 1,
+      "identifier": "custom1",
+      "processor": {
+        "identifier": "photo.to.amazonmarketplace.AmazonStandardCupProcessor",
+        "metadata": {
+          "sku": "14631000"
+        }
+      },
+      "title": "Tasse (14631000)"
+    }
+  ],
+  "status": "Enqueued",
+  "statusHistory": [
+  ]
+}
+```
+
+Load an order
+
+### URL Params
+`orderId=[long]`
+
+### Error Response
+* **404 NOT FOUND**
+
+    No order found
+
+```json
+{
+  "status": "NOT_FOUND",
+  "timestamp": "2018-01-01 12:34:56.789",
+  "message": "Order not found",
+  "debugMessage": "Order not found"
+}
+```
+
+* **410 GONE**
+
+    The order is canceled
+
+```json
+{
+  "status": "GONE",
+  "timestamp": "2018-01-01 12:34:56.789",
+  "message": "Order is canceled",
+  "debugMessage": "Order is canceled"
+}
+```
