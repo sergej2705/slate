@@ -44,6 +44,14 @@ An `order` can have multiple status. Some status require or need an explicit ack
 
 ### StatusEntry
 
+```json
+  {
+    "acknowledged": true, 
+    "date": "1525505632181", 
+    "status": "Temporary"
+  }
+```
+
 | Parameter     | Type     | Responsible Role       | Description  |
 | ------------- | -------- | ---------------------- | ------------ |
 | status        | string   | S                      | See [status](#status) for mode details |
@@ -52,6 +60,55 @@ An `order` can have multiple status. Some status require or need an explicit ack
 | metadata      | map      | S                      | Optional metadata in a free key-value manner (e.g. tracking numbers)| 
 
 ### Customer
+
+```json
+  "customer": {
+    "billingaddress": {
+      "city": "Berlin", 
+      "country": "DE", 
+      "firstname": "Max", 
+      "lastname": "Mustermann", 
+      "street": "Musterstraße 33", 
+      "zipcode": "12587"
+    }, 
+    "deliveryaddress": {
+      "city": "Berlin", 
+      "country": "DE", 
+      "firstname": "Gunda", 
+      "lastname": "Gaukelei", 
+      "street": "Schloß 666", 
+      "zipcode": "12587"
+    }, 
+    "email": "m.mustermann@example.com"
+  }
+```
+
+The `customer`consists of two separate addresses for billing and delivery along with a separate email-address.
+
+| Parameter       | Type     | Responsible Role       | Description  |
+| --------------- | -------- | ---------------------- | ------------ |
+| billingaddress  | address  | U                      | See [address](#address) for mode details |
+| deliveryaddress | address  | U                      | See [address](#address) for mode details |
+| email           | string   | U                      | The customer's email-address |
+
+### Address
+
+```json
+  "billingaddress": {
+    "city": "Berlin", 
+    "country": "DE", 
+    "firstname": "Max", 
+    "lastname": "Mustermann", 
+    "street": "Musterstraße 33", 
+    "zipcode": "12587"
+  } 
+```
+
+The attributes have the same meaning as in other customer or address related systems. The following table therefore does only provide some extra details on specific attributes. 
+
+| Parameter       | Type     | Description  |
+| --------------- | -------- | ------------ |
+| country         | string   | Must be provided as [ISO 3166-1 ALPHA-2](https://en.wikipedia.org/wiki/ISO_3166-1) |
 
 ## Create Order
 
