@@ -2,17 +2,56 @@
 
 ## Resource
 
-The `order` resource is the central resource of to.photo. It's parameters are listed in the following table.
+The `order` resource along with it's subresources is the central resource of to.photo. It's parameters are listed in the following table. Each API-function always accepts or returns a complete `order`structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)
 
-| Parameter | Mandatory | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| locale    | true      | Locale for the checkout. Determines the language that is used within the checkout website. Accepted values follow the POSIX locale schema and use [ISO 639](https://en.wikipedia.org/wiki/ISO_639) language codes and optionally [ISO 3166-1 ALPHA-2](https://en.wikipedia.org/wiki/ISO_3166-1) country codes, for example `de` or `fr_FR`. The global default, if no matching language is found, is German. Locale definitions are not case-sensitive. |
-| id        | false     | A UUID identifying this checkout. The UUID will be generated on the checkout server side. If one is contained in a crate request, it will be ignored.                                                                                                                                                                                                                                                                                                        |
-| order_url | true      | Callback URL to report a successful order. The body of this call with contain a complete [order](#orders) resource. This URL will be called after a user finishes the checkout. The API will try to get through to this URL for up to 12 hours. If no successful request can be performed within this time range, the order will be canceled.                                                                                                            |
-| cart      | true      | See [cart](#cart) for more details.                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| customer  | false     | See [customer](#customer) for more details.
+| Parameter     | Type     | Responsible Role       | Description  |
+| ------------- | -------- | ---------------------- | ------------ |
+| orderId       | long     | S                      | Unique id of this resource. Always ands with 0. The up to 9 possible subcarts fill the last digit |
+| orderdate     | long     | C (or S if not given)  | Unix timestamp of the order's date |
+| mandator      | int      | C                      | The mandator given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
+| portal        | int      | C                      | The portal given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
+| status        | string   | S                      | See [status](#status) for more details |
+| statusHistory | array    | S                      | Array of `StatusEntry`-subresources. See [statusEntry](#statusEntry) for more details |
+| customer      | customer | C                      | See [customer](#customer) for more details |
+| projects      | array    | C                      | Array of `Project`-subresources. See [project](#project) for more details |
+| bunches       | array    | C                      | Array of `Bunch`-subresources. See [bunch](#bunch) for more details |
+| cart          | cart     | S                      | `cart`-subresource. See [cart](#cart) for more details |
+| payload       | array    | C                      | Array of `Payload`-subresources. See [payload](#payload) for more details |
 
+## Subresources
 
+Subresources only 'live' within their parent `order` resource.
+
+### Status
+
+An `order` can have multiple status. Some status require or need an explicit acknowledge action, because they may lead to additional steps on mandator side (e.g. signal shipment to external shop system).
+
+| Name        | Auto-Acknowledged | Description  |
+| ----------- | ----------------- | ------------ |
+| Temporary   | Y                 | The order is in a creational state. It hasn't been ordered in a legal manner yet. Customer data and payment-informationen may be added |
+| Transferred | Y                 | The order's payload (binary data, images, etc.) has been finally transferred. Processing may start now |
+| New         | Y                 | Intermediate state. Ready to be further processed. |
+| Enqueued    | Y                 | The order has been enqueued for processing and exporting |
+| Exporting   | Y                 | The order is actively processing and the output will be generated by the producer (e.g. written to disk or uploaded to another server) | 
+| Exported    | Y                 | The order has been exported |
+| Producing   | Y                 | The order has been picked up by the producer and will be produced somewhen in the near futuere |
+| Produced    | N                 | The order has been succesfully produced. |
+| Shipped     | N                 | The order has been handed to the shipping agency |
+| Delivered   | Y                 | The order has been handed over to the user |
+| Failed      | N                 | An exception occured while processing the order. Additional information maybe found via the StatusHistory |
+| Test        | Y                 | The order is for testing purposes and won't be charged or physically produced |
+| Canceled    | Y                 | The order is canceled and won't be processed any further |
+
+### StatusEntry
+
+| Parameter     | Type     | Responsible Role       | Description  |
+| ------------- | -------- | ---------------------- | ------------ |
+| status        | string   | S                      | See [status](#status) for mode details |
+| date          | long     | S                      | Unix timestamp of this status effective date |
+| acknowledged  | bool     | S                      | Has this status already been acknowledged (automatically or manually) |
+| metadata      | map      | S                      | Optional metadata in a free key-value manner (e.g. tracking numbers)| 
+
+### Customer
 
 ## Create Order
 
