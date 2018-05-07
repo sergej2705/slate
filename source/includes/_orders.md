@@ -11,18 +11,14 @@ The `order` resource along with it's subresources is the central resource of to.
 | mandator      | int      | C                      | The mandator given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
 | portal        | int      | C                      | The portal given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
 | status        | string   | S                      | See [status](#status) for more details |
-| statusHistory | array    | S                      | Array of `StatusEntry`-subresources. See [statusEntry](#statusEntry) for more details |
+| statusHistory | array    | S                      | Array of `StatusEntry`-subresources. See [StatusEntry](#statusentry) for more details |
 | customer      | customer | C                      | See [customer](#customer) for more details |
 | projects      | array    | C                      | Array of `Project`-subresources. See [project](#project) for more details |
 | bunches       | array    | C                      | Array of `Bunch`-subresources. See [bunch](#bunch) for more details |
 | cart          | cart     | S                      | `cart`-subresource. See [cart](#cart) for more details |
 | payload       | array    | C                      | Array of `Payload`-subresources. See [payload](#payload) for more details |
 
-## Subresources
-
-Subresources only 'live' within their parent `order` resource.
-
-### Status
+## Status
 
 An `order` can have multiple status. Some status require or need an explicit acknowledge action, because they may lead to additional steps on mandator side (e.g. signal shipment to external shop system).
 
@@ -41,6 +37,11 @@ An `order` can have multiple status. Some status require or need an explicit ack
 | Failed      | N                 | An exception occured while processing the order. Additional information maybe found via the StatusHistory |
 | Test        | Y                 | The order is for testing purposes and won't be charged or physically produced |
 | Canceled    | Y                 | The order is canceled and won't be processed any further |
+
+
+## Subresources
+
+Subresources only 'live' within their parent `order` resource.
 
 ### StatusEntry
 
@@ -92,17 +93,6 @@ The `customer`consists of two separate addresses for billing and delivery along 
 | email           | string   | U                      | The customer's email-address |
 
 ### Address
-
-```json
-  "billingaddress": {
-    "city": "Berlin", 
-    "country": "DE", 
-    "firstname": "Max", 
-    "lastname": "Mustermann", 
-    "street": "Musterstraße 33", 
-    "zipcode": "12587"
-  } 
-```
 
 The attributes have the same meaning as in other customer or address related systems. The following table therefore does only provide some extra details on specific attributes. 
 
