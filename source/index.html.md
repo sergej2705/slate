@@ -9,6 +9,7 @@ toc_footers:
 
 includes:
   - orders
+  - portals
   - errors
 
 search: true
@@ -25,7 +26,7 @@ Welcome to the to.photo API! You can use our API to access to.photo API endpoint
 | Name            | Abbreviation | Description  |
 | --------------- | ------------ | ------------ |
 | Server          | S            | Everything the server does in response to API-requests |
-| Mandator        | M            | Integrational role between Server und User/Frtonend. Some data originates from the user and is just routed through to the server while some is process / workflow specific | 
+| Mandator        | M            | Integrational role between Server und User/Frontend. Some data originates from the user and is just routed through to the server while some is process / workflow specific | 
 | User / Customer | U            | The User who is ordering photo products through the system. In general the order process has indirect character via additional meta information available in the domain of the mandator's domain |
 
 # Portal / Mandator
@@ -42,6 +43,6 @@ to.photo expects for the Basic Auth to be included in all API requests to the se
 
 `Authorization: yourkeyhere`
 
-The supplied token hat to match the [Portal and Mandator](#portal-mandator).
+The supplied token has to match the [Portal and Mandator](#portal-mandator).
 
 # 
