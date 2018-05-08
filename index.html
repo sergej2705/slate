@@ -219,6 +219,12 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="introduction">Introduction</a>
           </li>
           <li>
+            <a href="#roles" class="toc-h1 toc-link" data-title="roles">Roles</a>
+          </li>
+          <li>
+            <a href="#portal-mandator" class="toc-h1 toc-link" data-title="portal-mandator">Portal / Mandator</a>
+          </li>
+          <li>
             <a href="#authentication" class="toc-h1 toc-link" data-title="authentication">Authentication</a>
           </li>
           <li>
@@ -226,6 +232,12 @@
               <ul class="toc-list-h2">
                   <li>
                     <a href="#resource" class="toc-h2 toc-link" data-title="resource">Resource</a>
+                  </li>
+                  <li>
+                    <a href="#status" class="toc-h2 toc-link" data-title="status">Status</a>
+                  </li>
+                  <li>
+                    <a href="#subresources" class="toc-h2 toc-link" data-title="subresources">Subresources</a>
                   </li>
                   <li>
                     <a href="#create-order" class="toc-h2 toc-link" data-title="create-order">Create Order</a>
@@ -265,46 +277,302 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <p>Welcome to the to.photo API! You can use our API to access to.photo API endpoints, which will serve you 24/7 with beautiful, high quality photo products.</p>
+<h1 id='roles'>Roles</h1>
+<p>3 roles are distinguished throughout this documentation.</p>
+
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Abbreviation</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Server</td>
+<td>S</td>
+<td>Everything the server does in response to API-requests</td>
+</tr>
+<tr>
+<td>Mandator</td>
+<td>M</td>
+<td>Integrational role between Server und User/Frtonend. Some data originates from the user and is just routed through to the server while some is process / workflow specific</td>
+</tr>
+<tr>
+<td>User / Customer</td>
+<td>U</td>
+<td>The User who is ordering photo products through the system. In general the order process has indirect character via additional meta information available in the domain of the mandator&#39;s domain</td>
+</tr>
+</tbody></table>
+<h1 id='portal-mandator'>Portal / Mandator</h1>
+<p>Portals are mandator specific and are meant to describe a specific project or public facing product. </p>
+
+<p>It is thinkable to correlate specific price and / or product profiles to a portal at mandator-side.</p>
 <h1 id='authentication'>Authentication</h1>
 <p>to.photo uses Basic Auth to allow access to the API. To get new Basic Auth Credentials contact your personal Key Account Manager.</p>
 
 <p>to.photo expects for the Basic Auth to be included in all API requests to the server in a header that looks like the following:</p>
 
 <p><code>Authorization: yourkeyhere</code></p>
+
+<p>The supplied token hat to match the <a href="#portal-mandator">Portal and Mandator</a>.</p>
 <h1 id='orders'>Orders</h1><h2 id='resource'>Resource</h2>
-<p>The <code>order</code> resource is the central resource of to.photo. It&#39;s parameters are listed in the following table.</p>
+<p>The <code>order</code> resource along with it&#39;s subresources is the central resource of to.photo. It&#39;s parameters are listed in the following table. Each API-function always accepts or returns a complete <code>order</code>structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)</p>
 
 <table><thead>
 <tr>
 <th>Parameter</th>
-<th>Mandatory</th>
+<th>Type</th>
+<th>Responsible Role</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>locale</td>
-<td>true</td>
-<td>Locale for the checkout. Determines the language that is used within the checkout website. Accepted values follow the POSIX locale schema and use <a href="https://en.wikipedia.org/wiki/ISO_639">ISO 639</a> language codes and optionally <a href="https://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1 ALPHA-2</a> country codes, for example <code>de</code> or <code>fr_FR</code>. The global default, if no matching language is found, is German. Locale definitions are not case-sensitive.</td>
+<td>orderId</td>
+<td>long</td>
+<td>S</td>
+<td>Unique id of this resource. Always ands with 0. The up to 9 possible subcarts fill the last digit</td>
 </tr>
 <tr>
-<td>id</td>
-<td>false</td>
-<td>A UUID identifying this checkout. The UUID will be generated on the checkout server side. If one is contained in a crate request, it will be ignored.</td>
+<td>orderdate</td>
+<td>long</td>
+<td>C (or S if not given)</td>
+<td>Unix timestamp of the order&#39;s date</td>
 </tr>
 <tr>
-<td>order_url</td>
-<td>true</td>
-<td>Callback URL to report a successful order. The body of this call with contain a complete <a href="#orders">order</a> resource. This URL will be called after a user finishes the checkout. The API will try to get through to this URL for up to 12 hours. If no successful request can be performed within this time range, the order will be canceled.</td>
+<td>mandator</td>
+<td>int</td>
+<td>C</td>
+<td>The mandator given by the to.photo admin. See <a href="#portal-mandator">Portal / Mandator</a></td>
 </tr>
 <tr>
-<td>cart</td>
-<td>true</td>
-<td>See <a href="#cart">cart</a> for more details.</td>
+<td>portal</td>
+<td>int</td>
+<td>C</td>
+<td>The portal given by the to.photo admin. See <a href="#portal-mandator">Portal / Mandator</a></td>
+</tr>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>S</td>
+<td>See <a href="#status">status</a> for more details</td>
+</tr>
+<tr>
+<td>statusHistory</td>
+<td>array</td>
+<td>S</td>
+<td>Array of <code>StatusEntry</code>-subresources. See <a href="#statusentry">StatusEntry</a> for more details</td>
 </tr>
 <tr>
 <td>customer</td>
-<td>false</td>
-<td>See <a href="#customer">customer</a> for more details.</td>
+<td>customer</td>
+<td>C</td>
+<td>See <a href="#customer">customer</a> for more details</td>
+</tr>
+<tr>
+<td>projects</td>
+<td>array</td>
+<td>C</td>
+<td>Array of <code>Project</code>-subresources. See <a href="#project">project</a> for more details</td>
+</tr>
+<tr>
+<td>bunches</td>
+<td>array</td>
+<td>C</td>
+<td>Array of <code>Bunch</code>-subresources. See <a href="#bunch">bunch</a> for more details</td>
+</tr>
+<tr>
+<td>cart</td>
+<td>cart</td>
+<td>S</td>
+<td><code>cart</code>-subresource. See <a href="#cart">cart</a> for more details</td>
+</tr>
+<tr>
+<td>payload</td>
+<td>array</td>
+<td>C</td>
+<td>Array of <code>Payload</code>-subresources. See <a href="#payload">payload</a> for more details</td>
+</tr>
+</tbody></table>
+<h2 id='status'>Status</h2>
+<p>An <code>order</code> can have multiple status. Some status require or need an explicit acknowledge action, because they may lead to additional steps on mandator side (e.g. signal shipment to external shop system).</p>
+
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Auto-Acknowledged</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Temporary</td>
+<td>Y</td>
+<td>The order is in a creational state. It hasn&#39;t been ordered in a legal manner yet. Customer data and payment-informationen may be added</td>
+</tr>
+<tr>
+<td>Transferred</td>
+<td>Y</td>
+<td>The order&#39;s payload (binary data, images, etc.) has been finally transferred. Processing may start now</td>
+</tr>
+<tr>
+<td>New</td>
+<td>Y</td>
+<td>Intermediate state. Ready to be further processed.</td>
+</tr>
+<tr>
+<td>Enqueued</td>
+<td>Y</td>
+<td>The order has been enqueued for processing and exporting</td>
+</tr>
+<tr>
+<td>Exporting</td>
+<td>Y</td>
+<td>The order is actively processing and the output will be generated by the producer (e.g. written to disk or uploaded to another server)</td>
+</tr>
+<tr>
+<td>Exported</td>
+<td>Y</td>
+<td>The order has been exported</td>
+</tr>
+<tr>
+<td>Producing</td>
+<td>Y</td>
+<td>The order has been picked up by the producer and will be produced somewhen in the near futuere</td>
+</tr>
+<tr>
+<td>Produced</td>
+<td>N</td>
+<td>The order has been succesfully produced.</td>
+</tr>
+<tr>
+<td>Shipped</td>
+<td>N</td>
+<td>The order has been handed to the shipping agency</td>
+</tr>
+<tr>
+<td>Delivered</td>
+<td>Y</td>
+<td>The order has been handed over to the user</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>N</td>
+<td>An exception occured while processing the order. Additional information maybe found via the StatusHistory</td>
+</tr>
+<tr>
+<td>Test</td>
+<td>Y</td>
+<td>The order is for testing purposes and won&#39;t be charged or physically produced</td>
+</tr>
+<tr>
+<td>Canceled</td>
+<td>Y</td>
+<td>The order is canceled and won&#39;t be processed any further</td>
+</tr>
+</tbody></table>
+<h2 id='subresources'>Subresources</h2>
+<p>Subresources only &#39;live&#39; within their parent <code>order</code> resource.</p>
+<h3 id='statusentry'>StatusEntry</h3><pre class="highlight json tab-json"><code><span class="w">  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"acknowledged"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1525505632181"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Temporary"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Responsible Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>S</td>
+<td>See <a href="#status">status</a> for mode details</td>
+</tr>
+<tr>
+<td>date</td>
+<td>long</td>
+<td>S</td>
+<td>Unix timestamp of this status effective date</td>
+</tr>
+<tr>
+<td>acknowledged</td>
+<td>bool</td>
+<td>S</td>
+<td>Has this status already been acknowledged (automatically or manually)</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>map</td>
+<td>S</td>
+<td>Optional metadata in a free key-value manner (e.g. tracking numbers)</td>
+</tr>
+</tbody></table>
+<h3 id='customer'>Customer</h3><pre class="highlight json tab-json"><code><span class="w">  </span><span class="s2">"customer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"billingaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Berlin"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mustermann"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Musterstraße 33"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12587"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> 
+    </span><span class="s2">"deliveryaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Berlin"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"firstname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gunda"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"lastname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gaukelei"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Schloß 666"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"zipcode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12587"</span><span class="w">
+    </span><span class="p">},</span><span class="w"> 
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"m.mustermann@example.com"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>customer</code>consists of two separate addresses for billing and delivery along with a separate email-address.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Responsible Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>billingaddress</td>
+<td>address</td>
+<td>U</td>
+<td>See <a href="#address">address</a> for mode details</td>
+</tr>
+<tr>
+<td>deliveryaddress</td>
+<td>address</td>
+<td>U</td>
+<td>See <a href="#address">address</a> for mode details</td>
+</tr>
+<tr>
+<td>email</td>
+<td>string</td>
+<td>U</td>
+<td>The customer&#39;s email-address</td>
+</tr>
+</tbody></table>
+<h3 id='address'>Address</h3>
+<p>The attributes have the same meaning as in other customer or address related systems. The following table therefore does only provide some extra details on specific attributes. </p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>country</td>
+<td>string</td>
+<td>Must be provided as <a href="https://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1 ALPHA-2</a></td>
 </tr>
 </tbody></table>
 <h2 id='create-order'>Create Order</h2>
