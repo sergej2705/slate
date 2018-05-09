@@ -15,8 +15,8 @@ The `order` resource along with it's subresources is the central resource of to.
 | customer      | customer | C                      | See [Customer](#customer) for more details |
 | projects      | array    | C                      | Array of `Project`-subresources. See [Project](#project) for more details |
 | bunches       | array    | C                      | Array of `Bunch`-subresources. See [Bunch](#bunch) for more details |
-| cart          | cart     | S                      | See [Cart](#cart) for more details |
 | payload       | array    | C                      | Array of `Payload`-subresources. See [Payload](#payload) for more details |
+| cart          | cart     | S                      | See [Cart](#cart) for more details |
 
 ## Status
 
@@ -178,6 +178,23 @@ A `BunchItem` is a subpart of a `Bunch`. While one `BunchItem` could consist of 
 | mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
 | reference       | string    | M                      | The 'body' of this item. Describes filename, url or content depending on the type parameter. |
 | metadata        | map       | M                      | Optional metadata in a free key-value manner (e.g. tags, descriptors, significance) | 
+
+### Payload
+
+```json
+{
+  "mimetype": "application/zip", 
+  "name": "custom1.zip"
+}
+````
+
+A `Payload` describes one file in the [finally posted](#finalizeorder) zip file. In difference to a `BunchItems` a `Payload` has no direct connection to a `Project`. This decoupling enables shared resources. As duplicate filenames within a zip file are not allowd there won't be 2 `Payloads` with the same name.
+
+| Parameter       | Type      | Responsible Role       | Description  |
+| --------------- | --------- | ---------------------- | ------------ |
+| mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
+| name            | string    | M                      | The file name |
+
 
 ## Create Order
 
