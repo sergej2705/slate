@@ -10,13 +10,13 @@ The `order` resource along with it's subresources is the central resource of to.
 | orderdate     | long     | C (or S if not given)  | Unix timestamp of the order's date |
 | mandator      | int      | C                      | The mandator given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
 | portal        | int      | C                      | The portal given by the to.photo admin. See [Portal / Mandator](#portal-mandator) |
-| status        | string   | S                      | See [status](#status) for more details |
+| status        | string   | S                      | See [Status](#status) for more details |
 | statusHistory | array    | S                      | Array of `StatusEntry`-subresources. See [StatusEntry](#statusentry) for more details |
-| customer      | customer | C                      | See [customer](#customer) for more details |
-| projects      | array    | C                      | Array of `Project`-subresources. See [project](#project) for more details |
-| bunches       | array    | C                      | Array of `Bunch`-subresources. See [bunch](#bunch) for more details |
-| cart          | cart     | S                      | `cart`-subresource. See [cart](#cart) for more details |
-| payload       | array    | C                      | Array of `Payload`-subresources. See [payload](#payload) for more details |
+| customer      | customer | C                      | See [Customer](#customer) for more details |
+| projects      | array    | C                      | Array of `Project`-subresources. See [Project](#project) for more details |
+| bunches       | array    | C                      | Array of `Bunch`-subresources. See [Bunch](#bunch) for more details |
+| cart          | cart     | S                      | See [Cart](#cart) for more details |
+| payload       | array    | C                      | Array of `Payload`-subresources. See [Payload](#payload) for more details |
 
 ## Status
 
@@ -45,6 +45,8 @@ Subresources only 'live' within their parent `order` resource.
 
 ### StatusEntry
 
+> StatusEntry JSON
+
 ```json
   {
     "acknowledged": true, 
@@ -55,12 +57,14 @@ Subresources only 'live' within their parent `order` resource.
 
 | Parameter     | Type     | Responsible Role       | Description  |
 | ------------- | -------- | ---------------------- | ------------ |
-| status        | string   | S                      | See [status](#status) for mode details |
+| status        | string   | S                      | See [Status](#status) for mode details |
 | date          | long     | S                      | Unix timestamp of this status effective date |
 | acknowledged  | bool     | S                      | Has this status already been acknowledged (automatically or manually) |
 | metadata      | map      | S                      | Optional metadata in a free key-value manner (e.g. tracking numbers)| 
 
 ### Customer
+
+> Customer and Address JSON
 
 ```json
   "customer": {
@@ -84,13 +88,13 @@ Subresources only 'live' within their parent `order` resource.
   }
 ```
 
-The `customer`consists of two separate addresses for billing and delivery along with a separate email-address.
+The `Customer` consists of two separate addresses for billing and delivery along with a separate email-address.
 
 | Parameter       | Type     | Responsible Role       | Description  |
 | --------------- | -------- | ---------------------- | ------------ |
-| billingaddress  | address  | U                      | See [address](#address) for mode details |
-| deliveryaddress | address  | U                      | See [address](#address) for mode details |
-| email           | string   | U                      | The customer's email-address |
+| billingaddress  | address  | C                      | See [Address](#address) for mode details |
+| deliveryaddress | address  | C                      | See [Address](#address) for mode details |
+| email           | string   | C                      | The customer's email-address |
 
 ### Address
 
@@ -100,7 +104,80 @@ The attributes have the same meaning as in other customer or address related sys
 | --------------- | -------- | ------------ |
 | country         | string   | Must be provided as [ISO 3166-1 ALPHA-2](https://en.wikipedia.org/wiki/ISO_3166-1) |
 
+### Project
 
+> Project and Processor JSON
+
+```json
+{
+  "count": 1, 
+  "identifier": "custom1", 
+  "title": "Zaubertasse mit pers\u00f6nlichem Foto zum selbst gestalten (Magic Fototasse mit Thermoeffekt, Text...",
+  "processor": {
+    "identifier": "photo.to.amazonmarketplace.AmazonStandardCupProcessor", 
+    "metadata": {
+      "passthrough": "true", 
+      "sku": "14621100"
+    }
+  }
+}
+````
+
+A `Project` describes one logical unit in the domain of the mandator (e.g. one series of photos of a specific event). Projects are a preliminary form of subcart-items and are evaluated according to the given meta-information and processors.
+
+| Parameter       | Type      | Responsible Role       | Description  |
+| --------------- | --------- | ---------------------- | ------------ |
+| count           | number    | C                      | Desired occurence of this project. While the final products are determined by the processor. Their counts are multiplied with this project count |
+| identifier      | string    | M                      | An unique identifier of this project which is used throughout this order |
+| title           | string    | M (indirect C)         | A description to be used as a human readable explanation |
+| processor       | processor | M (indirect C)         | The [Processor](#processor) to be used when processing this project |
+
+### Processor
+
+A `Processor` describes the server-side implementation, which analyses a project's data and determines and generates the final products.
+
+| Parameter       | Type      | Description  |
+| --------------- | --------- | ------------ |
+| identifier      | string    | Identifier of the processor. Currently the full qualified classname of the Java class. May be extended in the future to other schemes.
+| metadata        | map       | Optional metadata in a free key-value manner (e.g. feature flags, color schemes, ...)| 
+
+### Bunch
+
+> Bunch and BunchItem JSON
+
+```json
+{
+  "project": "custom1",
+  "items": [
+    {
+      "type": "Payload",
+      "mimetype": "application/zip", 
+      "reference": "custom1.zip",
+      "metadata": {
+        "main": true
+      }
+    }
+  ]
+}
+```
+
+A `Bunch` describes all items which belong to a project. The `Processor` will use the bunches to decide which product he will create. Multiple bunches may belong to a project. They represent one logical part of a project. In case of a photo book the page count could be determined based on the count and variety of the bunches and it's [BunchItems](#bunchitem)
+
+| Parameter       | Type      | Responsible Role       | Description  |
+| --------------- | --------- | ---------------------- | ------------ |
+| project         | string    | M                      | Identifier of the project this bunch belongs to |
+| items           | array     | M                      | Array of `BunchItems`-subresources.  See [BunchItem](#bunchitem) for more details |
+
+### BunchItem
+
+A `BunchItem` is a subpart of a `Bunch`. While one `BunchItem` could consist of a photograph, another could add a title string or some cliparts to be rendered ontop of the photograph. For binary data `BunchItems` just "link" to items of [Payload](#payload). They may reference to network content as well (see `type` parameter), which has to be downloaded upon processing.
+
+| Parameter       | Type      | Responsible Role       | Description  |
+| --------------- | --------- | ---------------------- | ------------ |
+| type            | string    | M                      | Describes the type of this item. May be one of 'Payload', 'Url' or (direct) 'Text' |
+| mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
+| reference       | string    | M                      | The 'body' of this item. Describes filename, url or content depending on the type parameter. |
+| metadata        | map       | M                      | Optional metadata in a free key-value manner (e.g. tags, descriptors, significance) | 
 
 ## Create Order
 
