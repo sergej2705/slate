@@ -2,7 +2,7 @@
 
 ## Resource
 
-The `order` resource along with it's subresources is the central resource of to.photo. It's parameters are listed in the following table. Each API-function always accepts or returns a complete `order`structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)
+The `order` resource along with its subresources is the central resource of to.photo. Its parameters are listed in the following table. Each API-function always accepts or returns a complete `order`structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)
 
 | Parameter     | Type     | Responsible Role       | Description  |
 | ------------- | -------- | ---------------------- | ------------ |
@@ -16,7 +16,8 @@ The `order` resource along with it's subresources is the central resource of to.
 | projects      | array    | C                      | Array of `Project`-subresources. See [Project](#project) for more details |
 | bunches       | array    | C                      | Array of `Bunch`-subresources. See [Bunch](#bunch) for more details |
 | payload       | array    | C                      | Array of `Payload`-subresources. See [Payload](#payload) for more details |
-| cart          | cart     | S                      | See [Cart](#cart) for more details |
+| cart          | cart     | S                      | See [Cart](#cartsubcart) for more details |
+| payment       | payment  | M                      | See [Payment](#payment) for more details |
 
 ## Status
 
@@ -92,8 +93,8 @@ The `Customer` consists of two separate addresses for billing and delivery along
 
 | Parameter       | Type     | Responsible Role       | Description  |
 | --------------- | -------- | ---------------------- | ------------ |
-| billingaddress  | address  | C                      | See [Address](#address) for mode details |
-| deliveryaddress | address  | C                      | See [Address](#address) for mode details |
+| billingaddress  | address  | C                      | See [Address](#address) for more details |
+| deliveryaddress | address  | C                      | See [Address](#address) for more details |
 | email           | string   | C                      | The customer's email-address |
 
 ### Address
@@ -130,7 +131,7 @@ A `Project` describes one logical unit in the domain of the mandator (e.g. one s
 | count           | number    | C                      | Desired occurence of this project. While the final products are determined by the processor. Their counts are multiplied with this project count |
 | identifier      | string    | M                      | An unique identifier of this project which is used throughout this order |
 | title           | string    | M (indirect C)         | A description to be used as a human readable explanation |
-| processor       | processor | M (indirect C)         | The [Processor](#processor) to be used when processing this project |
+| processor       | processor | M (indirect C)         | See [Processor](#processor) for more details |
 
 ### Processor
 
@@ -166,7 +167,7 @@ A `Bunch` describes all items which belong to a project. The `Processor` will us
 | Parameter       | Type      | Responsible Role       | Description  |
 | --------------- | --------- | ---------------------- | ------------ |
 | project         | string    | M                      | Identifier of the project this bunch belongs to |
-| items           | array     | M                      | Array of `BunchItems`-subresources.  See [BunchItem](#bunchitem) for more details |
+| items           | array     | M                      | Array of `BunchItems`-subresources. See [BunchItem](#bunchitem) for more details |
 
 ### BunchItem
 
@@ -195,6 +196,55 @@ A `Payload` describes one file in the [finally posted](#finalizeorder) zip file.
 | mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
 | name            | string    | M                      | The file name |
 
+### Cart / Subcart
+
+> Cart, Subcart, SubcartItem and Voucher JSON
+
+```json
+{
+  "subcarts": [
+    {
+      "orderId": 811, 
+      "paymentOrderId": "333-1111111-2222222", 
+      "producer": "Allcop", 
+      "producerOrderId": "123456", 
+      "producerOrderUniqueIdentifier": "944400123456", 
+      "qos": "Standard", 
+      "shipping": 3450, 
+      "items": [
+        {
+          "count": 1, 
+          "price": 14230, 
+          "processorIndex": 0, 
+          "project": "custom1", 
+          "sku": "14621100"
+        } 
+      ],
+      "voucher": {
+        "code": "AMZNMutti", 
+        "description": "Amazon Gutschein", 
+        "value": 7530
+      }
+    }
+  ]
+}
+```
+
+A `Cart` encapsulate one or more [Subcarts](#subcart). In the latter case multiple producers are involved who ship their goods separately to the customer. Each `Subcart` is handled as a suborder, while the [Payment](#payment) spans across all of them.
+
+| Parameter                     | Type      | Responsible Role       | Description  |
+| ----------------------------- | --------- | ---------------------- | ------------ |
+| orderId                       | number    | S                      | Unique id |
+| paymentOrderId                | string    | M                      | Domain and mandator specific identifier. May be mapped to an external shopsystem (Shopify, Amazon, Ebay) |
+| producer                      | string    | S                      | The producer. Currently only `Allcop` |
+| producerOrderId               | string    | S                      | The unique id in the producers name- and numberingspace |
+| producerOrderUniqueIdentifier | string    | S                      | Optional identifier for special mappings (used in `Allcop` status files) |
+| qos                           | string    | M                      | Quality of service. One of `Standard` or `Express`|
+| shipping                      | number    | M                      | Shipping costs in tenth of minor units |
+| items                         | array     | S                      | Array of `SubcartItem'-subresources. See [SubcartItem](#subcartitem) for more details |
+| voucher                       | voucher   | M                      | See [B´Voucher](#voucher) for mode details |
+
+### SubcartItem
 
 ## Create Order
 
