@@ -4,7 +4,7 @@
 
 The `order` resource along with its subresources is the central resource of to.photo. Its parameters are listed in the following table. Each API-function always accepts or returns a complete `order`structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)
 
-| Parameter     | Type     | Responsible Role       | Description  |
+| Parameter     | Type     | Originating Role       | Description  |
 | ------------- | -------- | ---------------------- | ------------ |
 | orderId       | long     | S                      | Unique id of this resource. Always ands with 0. The up to 9 possible subcarts fill the last digit |
 | orderdate     | long     | C (or S if not given)  | Unix timestamp of the order's date |
@@ -56,7 +56,7 @@ Subresources only 'live' within their parent `order` resource.
   }
 ```
 
-| Parameter     | Type     | Responsible Role       | Description  |
+| Parameter     | Type     | Originating Role       | Description  |
 | ------------- | -------- | ---------------------- | ------------ |
 | status        | string   | S                      | See [Status](#status) for mode details |
 | date          | long     | S                      | Unix timestamp of this status effective date |
@@ -91,7 +91,7 @@ Subresources only 'live' within their parent `order` resource.
 
 The `Customer` consists of two separate addresses for billing and delivery along with a separate email-address.
 
-| Parameter       | Type     | Responsible Role       | Description  |
+| Parameter       | Type     | Originating Role       | Description  |
 | --------------- | -------- | ---------------------- | ------------ |
 | billingaddress  | address  | C                      | See [Address](#address) for more details |
 | deliveryaddress | address  | C                      | See [Address](#address) for more details |
@@ -113,7 +113,7 @@ The attributes have the same meaning as in other customer or address related sys
 {
   "count": 1, 
   "identifier": "custom1", 
-  "title": "Zaubertasse mit pers\u00f6nlichem Foto zum selbst gestalten (Magic Fototasse mit Thermoeffekt, Text...",
+  "title": "Zaubertasse mit pers\u00f6nlichem Foto zum selbst gestalten",
   "processor": {
     "identifier": "photo.to.amazonmarketplace.AmazonStandardCupProcessor", 
     "metadata": {
@@ -126,7 +126,7 @@ The attributes have the same meaning as in other customer or address related sys
 
 A `Project` describes one logical unit in the domain of the mandator (e.g. one series of photos of a specific event). Projects are a preliminary form of subcart-items and are evaluated according to the given meta-information and processors.
 
-| Parameter       | Type      | Responsible Role       | Description  |
+| Parameter       | Type      | Originating Role       | Description  |
 | --------------- | --------- | ---------------------- | ------------ |
 | count           | number    | C                      | Desired occurence of this project. While the final products are determined by the processor. Their counts are multiplied with this project count |
 | identifier      | string    | M                      | An unique identifier of this project which is used throughout this order |
@@ -135,7 +135,7 @@ A `Project` describes one logical unit in the domain of the mandator (e.g. one s
 
 ### Processor
 
-A `Processor` describes the server-side implementation, which analyses a project's data and determines and generates the final products.
+A `Processor` describes the server-side implementation, which analyses a project's data and determines and generates the final products. While standard implementations are existing, specific domain implementations are often needed. 
 
 | Parameter       | Type      | Description  |
 | --------------- | --------- | ------------ |
@@ -164,7 +164,7 @@ A `Processor` describes the server-side implementation, which analyses a project
 
 A `Bunch` describes all items which belong to a project. The `Processor` will use the bunches to decide which product he will create. Multiple bunches may belong to a project. They represent one logical part of a project. In case of a photo book the page count could be determined based on the count and variety of the bunches and it's [BunchItems](#bunchitem)
 
-| Parameter       | Type      | Responsible Role       | Description  |
+| Parameter       | Type      | Originating Role       | Description  |
 | --------------- | --------- | ---------------------- | ------------ |
 | project         | string    | M                      | Identifier of the project this bunch belongs to |
 | items           | array     | M                      | Array of `BunchItems`-subresources. See [BunchItem](#bunchitem) for more details |
@@ -173,7 +173,7 @@ A `Bunch` describes all items which belong to a project. The `Processor` will us
 
 A `BunchItem` is a subpart of a `Bunch`. While one `BunchItem` could consist of a photograph, another could add a title string or some cliparts to be rendered ontop of the photograph. For binary data `BunchItems` just "link" to items of [Payload](#payload). They may reference to network content as well (see `type` parameter), which has to be downloaded upon processing.
 
-| Parameter       | Type      | Responsible Role       | Description  |
+| Parameter       | Type      | Originating Role       | Description  |
 | --------------- | --------- | ---------------------- | ------------ |
 | type            | string    | M                      | Describes the type of this item. May be one of 'Payload', 'Url' or (direct) 'Text' |
 | mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
@@ -191,14 +191,14 @@ A `BunchItem` is a subpart of a `Bunch`. While one `BunchItem` could consist of 
 
 A `Payload` describes one file in the [finally posted](#finalizeorder) zip file. In difference to a `BunchItems` a `Payload` has no direct connection to a `Project`. This decoupling enables shared resources. As duplicate filenames within a zip file are not allowd there won't be 2 `Payloads` with the same name.
 
-| Parameter       | Type      | Responsible Role       | Description  |
+| Parameter       | Type      | Originating Role       | Description  |
 | --------------- | --------- | ---------------------- | ------------ |
 | mimetype        | string    | M                      | Must be provided as [RFC6838](http://www.iana.org/assignments/media-types/media-types.xhtml) |
 | name            | string    | M                      | The file name |
 
-### Cart / Subcart
+### Cart
 
-> Cart, Subcart, SubcartItem and Voucher JSON
+> Cart and Subcart JSON
 
 ```json
 {
@@ -230,9 +230,11 @@ A `Payload` describes one file in the [finally posted](#finalizeorder) zip file.
 }
 ```
 
-A `Cart` encapsulate one or more [Subcarts](#subcart). In the latter case multiple producers are involved who ship their goods separately to the customer. Each `Subcart` is handled as a suborder, while the [Payment](#payment) spans across all of them.
+A `Cart` encapsulate one or more [Subcarts](#subcart). In the latter case multiple producers are involved who ship their goods separately to the customer. Therefore each producer or even more specific each producer's place of production leads to a separate Subcart. Each `Subcart` is treated as a separate suborder, while the [Payment](#payment) applies to all of them. Since the mandator is responsible for price management shipping has to be provided by the mandator and not by the server.
 
-| Parameter                     | Type      | Responsible Role       | Description  |
+### Subcart
+
+| Parameter                     | Type      | Originating Role       | Description  |
 | ----------------------------- | --------- | ---------------------- | ------------ |
 | orderId                       | number    | S                      | Unique id |
 | paymentOrderId                | string    | M                      | Domain and mandator specific identifier. May be mapped to an external shopsystem (Shopify, Amazon, Ebay) |
@@ -242,9 +244,70 @@ A `Cart` encapsulate one or more [Subcarts](#subcart). In the latter case multip
 | qos                           | string    | M                      | Quality of service. One of `Standard` or `Express`|
 | shipping                      | number    | M                      | Shipping costs in tenth of minor units |
 | items                         | array     | S                      | Array of `SubcartItem'-subresources. See [SubcartItem](#subcartitem) for more details |
-| voucher                       | voucher   | M                      | See [B´Voucher](#voucher) for mode details |
+| voucher                       | voucher   | M                      | See [Voucher](#voucher) for mode details |
 
 ### SubcartItem
+
+> SubcartItem JSON
+
+```json
+{
+  "count": 1, 
+  "price": 14230, 
+  "processorIndex": 0, 
+  "project": "custom1", 
+  "sku": "14621100"
+}
+```
+
+A `SubcartItem` describes cart item with the same meaning as in related cart / checkout systems.
+
+| Parameter                     | Type      | Originating Role       | Description  |
+| ----------------------------- | --------- | ---------------------- | ------------ |
+| count                         | number    | S                      | Count of this item |
+| price                         | number    | M                      | Item price in tenth of minor units |
+| processorIndex                | number    | S                      | Index of this item within its project / processor's space. The processor determines n products which lead to separate SubcartItems. This determination is fixed and reproducable. To identify the items later on the incrementing index is assigned in order of appearance. |
+| project                       | string    | S                      | Reference to the project's identifier |
+| sku                           | string    | S                      | Stock keeping unit which donates a specific product (e.g. 20 page, 10x10cm, softcover, pure photobook)
+
+### Voucher
+
+> Voucher JSON
+
+```json
+{
+  "code": "AMZNMutti", 
+  "description": "Amazon Gutschein", 
+  "value": 7530
+}
+```
+
+A `Voucher` describes the discount to be applied to a `Subcart`.
+
+| Parameter                     | Type      | Originating Role       | Description  |
+| ----------------------------- | --------- | ---------------------- | ------------ |
+| code                          | string    | C                      | The code the user entered during the checkout |
+| description                   | string    | M                      | Human readable description. May be printed on the invoice |
+| value                         | string    | M                      | Absolute amount of discount in tenth of minor units |
+
+### Payment
+
+> Payment JSON
+
+```json
+{
+  "provider": "Amazon",
+  "metadata": {
+    "orderid": "333-2222222-111111"
+  }
+}
+```
+The `Payment` contains all information which refer to the order's payment. If something like authorize and capture is used, the involved ids and receipts are saved within this node.
+
+| Parameter                     | Type      | Originating Role       | Description  |
+| ----------------------------- | --------- | ---------------------- | ------------ |
+| provider                      | string    | M                      | The type of payment. Currently onle `Amazon` is supported. `Advance`, `Invoice`, `Paypal`, `Paypal Authorize and Capture` and `Stripe` are planned as well. |
+| metadata                      | map       | M                      | Optional metadata in a free key-value manner (e.g. ids, tokens, flags) | 
 
 ## Create Order
 

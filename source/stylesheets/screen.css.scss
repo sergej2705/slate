@@ -2,6 +2,7 @@
 @import 'normalize';
 @import 'variables';
 @import 'icon-font';
+
 // @import 'rtl'; // uncomment to switch to RTL format
 
 /*
@@ -613,3 +614,5 @@ html, body {
 .highlight, .highlight .w {
   background-color: $code-bg;
 }
+
+@import 'lightbox.min.css'

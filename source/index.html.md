@@ -17,6 +17,8 @@ search: true
 
 # Introduction
 
+<%= diagram('singlesubcart.wsd') %>
+
 Welcome to the to.photo API! You can use our API to access to.photo API endpoints, which will serve you 24/7 with beautiful, high quality photo products.
 
 # Roles
@@ -45,4 +47,4 @@ to.photo expects for the Basic Auth to be included in all API requests to the se
 
 The supplied token has to match the [Portal and Mandator](#portal-mandator).
 
-# 
+# Workflow
