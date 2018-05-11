@@ -47,7 +47,7 @@ class UniqueHeadCounter < Middleman::Renderers::MiddlemanRedcarpetHTML
     File.open(pngfile, "w+") { |f| f << open(url).read }
 
     #if response.body =~ /png: "(.+)"/
-      return "<a href='images/" + file + ".png' data-lightbox='image-" + file + "'><img src='images/" + file + ".png'></a>"
+      return "<span class='lightgallery'><a href='images/" + file + ".png'><img src='images/" + file + ".png'></a></span>"
     #end
   end
 end

@@ -615,4 +615,8 @@ html, body {
   background-color: $code-bg;
 }
 
-@import 'lightbox.min.css'
+.lg-backdrop.in {
+  opacity: 0.6 !important;
+}
+
+@import 'lightgallery.min.css'
