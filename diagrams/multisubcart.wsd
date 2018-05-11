@@ -1,0 +1,76 @@
+participant Series-App
+participant Series-Appserver
+participant ToPhoto-API
+participant ToPhoto-Worker
+participant Fotobox-Processor\n(Series)
+participant 10x10-RZ-Fotobuch-Processor\n(Series)
+participant ProducerDelegateFrontend
+participant ProducerDelegate1
+participant ProducerDelegate2
+Series-App->+Series-Appserver: Füge Serie X als Fotobox und \n10x10-RZ-Fotobuch in Warenkorb 
+alt Neuer Warenkorb 
+Series-Appserver->Series-Appserver: Start Warenkorb-Session
+else Bestehender Warenkorb
+Series-Appserver->Series-Appserver: Merge Warenkorb-Inhalte
+end
+Series-Appserver->Series-Appserver: Erstellung \nOrder-Struktur
+Series-Appserver->+ToPhoto-API: POST / (Order)
+ToPhoto-API->ToPhoto-API: Erzeuge OrderID
+ToPhoto-API->+Fotobox-Processor\n(Series): segment(List<Bunch>, List<Payload>, Serie X (1))
+Fotobox-Processor\n(Series)->-ToPhoto-API: List<SubcartItem>
+ToPhoto-API->+10x10-RZ-Fotobuch-Processor\n(Series): segment(List<Bunch>, List<Payload>, Serie X (2))
+10x10-RZ-Fotobuch-Processor\n(Series)->-ToPhoto-API: List<SubcartItem>
+ToPhoto-API->ToPhoto-API: Zusammenführen \nder SubcartItems
+ToPhoto-API->+ProducerDelegateFrontend: .segment(List<SubcartItem>)
+ProducerDelegateFrontend->ProducerDelegateFrontend: Segmentiere SKUs \nzu ProducerDelegates
+ProducerDelegateFrontend->+ProducerDelegate1: segment(List<SubcartItem>)
+ProducerDelegate1->-ProducerDelegateFrontend: List<Subcart>
+ProducerDelegateFrontend->+ProducerDelegate2: segment(List<SubcartItem>)
+ProducerDelegate2->-ProducerDelegateFrontend: List<Subcart>
+ProducerDelegateFrontend->ProducerDelegateFrontend: Zusammenführen \nder Subcarts 
+ProducerDelegateFrontend->-ToPhoto-API: List<Subcart>
+ToPhoto-API->-Series-Appserver: Order
+
+Series-Appserver->Series-Appserver: Ermittle Preise \nfür Subcarts
+Series-Appserver->-Series-App: Warenkorb
+Series-App->+Series-Appserver: Checkout\n(Adresse, Zahlungsinformationen)
+Series-Appserver->Series-Appserver: Anreichern \nder Order-Struktur\nmit Adressen etc.
+Series-Appserver->+ToPhoto-API: POST /checkout (Order)
+ToPhoto-API->ToPhoto-API: Update Order
+ToPhoto-API->-Series-Appserver: OrderID
+Series-Appserver->Series-Appserver: payload.zip mit \nFotos etc.
+Series-Appserver->+ToPhoto-API: POST /data (payload.zip)
+ToPhoto-API->ToPhoto-API: Speichere Order \nauf Platte
+
+ToPhoto-API->+ProducerDelegateFrontend: .generateOrderId(Subcart, Order)
+ProducerDelegateFrontend->+ProducerDelegate1: .generateOrderId(Order)
+ProducerDelegate1->-ProducerDelegateFrontend: OrderID
+ProducerDelegateFrontend->-ToPhoto-API: OrderID
+
+ToPhoto-API->+ProducerDelegateFrontend: .generateOrderId(Subcart, Order)
+ProducerDelegateFrontend->+ProducerDelegate2: .generateOrderId(Order)
+ProducerDelegate2->-ProducerDelegateFrontend: OrderID
+ProducerDelegateFrontend->-ToPhoto-API: OrderID
+
+
+ToPhoto-API->ToPhoto-API: Speichere Order \nin Mongo-DB
+ToPhoto-API-->+ToPhoto-Worker:
+ToPhoto-API->-Series-Appserver: OrderID
+Series-Appserver->Series-Appserver: Abspeichern Series-Order\n(ToPhoto-OrderID \n+ Zahlungsinformationen)
+Series-Appserver->-Series-App: OrderID
+
+ToPhoto-Worker->+Fotobox-Processor\n(Series): process(List<Bunch>, List<Payload>, Serie X (1))
+Fotobox-Processor\n(Series)->Fotobox-Processor\n(Series): Layout + Render
+Fotobox-Processor\n(Series)->-ToPhoto-Worker: List<Output>
+ToPhoto-Worker->+10x10-RZ-Fotobuch-Processor\n(Series): process(List<Bunch>, List<Payload>, Serie X (2))
+10x10-RZ-Fotobuch-Processor\n(Series)->10x10-RZ-Fotobuch-Processor\n(Series): Layout + Render
+10x10-RZ-Fotobuch-Processor\n(Series)->-ToPhoto-Worker: List<Output>
+ToPhoto-Worker->ToPhoto-Worker: Zusamenführen\nder Outputs
+ToPhoto-Worker->+ProducerDelegate1: export(Subcart, Order, List<Output>)
+ProducerDelegate1->ProducerDelegate1: Abspeichern + Misc.
+ProducerDelegate1->-ToPhoto-Worker:
+ToPhoto-Worker->+ProducerDelegate2: export(Subcart, Order, List<Output>)
+ProducerDelegate2->ProducerDelegate2: Abspeichern + Misc.
+ProducerDelegate2->-ToPhoto-Worker:
+ToPhoto-Worker->ToPhoto-Worker: Verschieben Orderdaten\nin Archiv
+

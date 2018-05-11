@@ -228,6 +228,9 @@
             <a href="#authentication" class="toc-h1 toc-link" data-title="authentication">Authentication</a>
           </li>
           <li>
+            <a href="#workflow" class="toc-h1 toc-link" data-title="workflow">Workflow</a>
+          </li>
+          <li>
             <a href="#orders" class="toc-h1 toc-link" data-title="orders">Orders</a>
               <ul class="toc-list-h2">
                   <li>
@@ -293,6 +296,8 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
+<p><a href='images/singlesubcart.wsd.png' data-lightbox='image-singlesubcart.wsd'><img src='images/singlesubcart.wsd.png'></a></p>
+
 <p>Welcome to the to.photo API! You can use our API to access to.photo API endpoints, which will serve you 24/7 with beautiful, high quality photo products.</p>
 <h1 id='roles'>Roles</h1>
 <p>3 roles are distinguished throughout this documentation.</p>
@@ -332,14 +337,14 @@
 <p><code>Authorization: yourkeyhere</code></p>
 
 <p>The supplied token has to match the <a href="#portal-mandator">Portal and Mandator</a>.</p>
-<h1 id='orders'>Orders</h1><h2 id='resource'>Resource</h2>
-<p>The <code>order</code> resource along with it&#39;s subresources is the central resource of to.photo. It&#39;s parameters are listed in the following table. Each API-function always accepts or returns a complete <code>order</code>structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)</p>
+<h1 id='workflow'>Workflow</h1><h1 id='orders'>Orders</h1><h2 id='resource'>Resource</h2>
+<p>The <code>order</code> resource along with its subresources is the central resource of to.photo. Its parameters are listed in the following table. Each API-function always accepts or returns a complete <code>order</code>structure. Depending on the function some parameters may be omitted (see specific documentation of the functions)</p>
 
 <table><thead>
 <tr>
 <th>Parameter</th>
 <th>Type</th>
-<th>Responsible Role</th>
+<th>Originating Role</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
@@ -371,7 +376,7 @@
 <td>status</td>
 <td>string</td>
 <td>S</td>
-<td>See <a href="#status">status</a> for more details</td>
+<td>See <a href="#status">Status</a> for more details</td>
 </tr>
 <tr>
 <td>statusHistory</td>
@@ -383,31 +388,37 @@
 <td>customer</td>
 <td>customer</td>
 <td>C</td>
-<td>See <a href="#customer">customer</a> for more details</td>
+<td>See <a href="#customer">Customer</a> for more details</td>
 </tr>
 <tr>
 <td>projects</td>
 <td>array</td>
 <td>C</td>
-<td>Array of <code>Project</code>-subresources. See <a href="#project">project</a> for more details</td>
+<td>Array of <code>Project</code>-subresources. See <a href="#project">Project</a> for more details</td>
 </tr>
 <tr>
 <td>bunches</td>
 <td>array</td>
 <td>C</td>
-<td>Array of <code>Bunch</code>-subresources. See <a href="#bunch">bunch</a> for more details</td>
-</tr>
-<tr>
-<td>cart</td>
-<td>cart</td>
-<td>S</td>
-<td><code>cart</code>-subresource. See <a href="#cart">cart</a> for more details</td>
+<td>Array of <code>Bunch</code>-subresources. See <a href="#bunch">Bunch</a> for more details</td>
 </tr>
 <tr>
 <td>payload</td>
 <td>array</td>
 <td>C</td>
-<td>Array of <code>Payload</code>-subresources. See <a href="#payload">payload</a> for more details</td>
+<td>Array of <code>Payload</code>-subresources. See <a href="#payload">Payload</a> for more details</td>
+</tr>
+<tr>
+<td>cart</td>
+<td>cart</td>
+<td>S</td>
+<td>See <a href="#cartsubcart">Cart</a> for more details</td>
+</tr>
+<tr>
+<td>payment</td>
+<td>payment</td>
+<td>M</td>
+<td>See <a href="#payment">Payment</a> for more details</td>
 </tr>
 </tbody></table>
 <h2 id='status'>Status</h2>
@@ -488,7 +499,11 @@
 </tbody></table>
 <h2 id='subresources'>Subresources</h2>
 <p>Subresources only &#39;live&#39; within their parent <code>order</code> resource.</p>
-<h3 id='statusentry'>StatusEntry</h3><pre class="highlight json tab-json"><code><span class="w">  </span><span class="p">{</span><span class="w">
+<h3 id='statusentry'>StatusEntry</h3>
+<blockquote>
+<p>StatusEntry JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="w">  </span><span class="p">{</span><span class="w">
     </span><span class="s2">"acknowledged"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> 
     </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1525505632181"</span><span class="p">,</span><span class="w"> 
     </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Temporary"</span><span class="w">
@@ -498,7 +513,7 @@
 <tr>
 <th>Parameter</th>
 <th>Type</th>
-<th>Responsible Role</th>
+<th>Originating Role</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
@@ -506,7 +521,7 @@
 <td>status</td>
 <td>string</td>
 <td>S</td>
-<td>See <a href="#status">status</a> for mode details</td>
+<td>See <a href="#status">Status</a> for mode details</td>
 </tr>
 <tr>
 <td>date</td>
@@ -527,7 +542,11 @@
 <td>Optional metadata in a free key-value manner (e.g. tracking numbers)</td>
 </tr>
 </tbody></table>
-<h3 id='customer'>Customer</h3><pre class="highlight json tab-json"><code><span class="w">  </span><span class="s2">"customer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+<h3 id='customer'>Customer</h3>
+<blockquote>
+<p>Customer and Address JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="w">  </span><span class="s2">"customer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"billingaddress"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
       </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Berlin"</span><span class="p">,</span><span class="w"> 
       </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span><span class="p">,</span><span class="w"> 
@@ -547,32 +566,32 @@
     </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"m.mustermann@example.com"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>The <code>customer</code>consists of two separate addresses for billing and delivery along with a separate email-address.</p>
+<p>The <code>Customer</code> consists of two separate addresses for billing and delivery along with a separate email-address.</p>
 
 <table><thead>
 <tr>
 <th>Parameter</th>
 <th>Type</th>
-<th>Responsible Role</th>
+<th>Originating Role</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>billingaddress</td>
 <td>address</td>
-<td>U</td>
-<td>See <a href="#address">address</a> for mode details</td>
+<td>C</td>
+<td>See <a href="#address">Address</a> for more details</td>
 </tr>
 <tr>
 <td>deliveryaddress</td>
 <td>address</td>
-<td>U</td>
-<td>See <a href="#address">address</a> for mode details</td>
+<td>C</td>
+<td>See <a href="#address">Address</a> for more details</td>
 </tr>
 <tr>
 <td>email</td>
 <td>string</td>
-<td>U</td>
+<td>C</td>
 <td>The customer&#39;s email-address</td>
 </tr>
 </tbody></table>
@@ -590,6 +609,407 @@
 <td>country</td>
 <td>string</td>
 <td>Must be provided as <a href="https://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1 ALPHA-2</a></td>
+</tr>
+</tbody></table>
+<h3 id='project'>Project</h3>
+<blockquote>
+<p>Project and Processor JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Zaubertasse mit pers</span><span class="se">\u</span><span class="s2">00f6nlichem Foto zum selbst gestalten"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"processor"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"identifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"photo.to.amazonmarketplace.AmazonStandardCupProcessor"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"passthrough"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14621100"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>Project</code> describes one logical unit in the domain of the mandator (e.g. one series of photos of a specific event). Projects are a preliminary form of subcart-items and are evaluated according to the given meta-information and processors.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>count</td>
+<td>number</td>
+<td>C</td>
+<td>Desired occurence of this project. While the final products are determined by the processor. Their counts are multiplied with this project count</td>
+</tr>
+<tr>
+<td>identifier</td>
+<td>string</td>
+<td>M</td>
+<td>An unique identifier of this project which is used throughout this order</td>
+</tr>
+<tr>
+<td>title</td>
+<td>string</td>
+<td>M (indirect C)</td>
+<td>A description to be used as a human readable explanation</td>
+</tr>
+<tr>
+<td>processor</td>
+<td>processor</td>
+<td>M (indirect C)</td>
+<td>See <a href="#processor">Processor</a> for more details</td>
+</tr>
+</tbody></table>
+<h3 id='processor'>Processor</h3>
+<p>A <code>Processor</code> describes the server-side implementation, which analyses a project&#39;s data and determines and generates the final products. While standard implementations are existing, specific domain implementations are often needed. </p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>identifier</td>
+<td>string</td>
+<td>Identifier of the processor. Currently the full qualified classname of the Java class. May be extended in the future to other schemes.</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>map</td>
+<td>Optional metadata in a free key-value manner (e.g. feature flags, color schemes, ...)</td>
+</tr>
+</tbody></table>
+<h3 id='bunch'>Bunch</h3>
+<blockquote>
+<p>Bunch and BunchItem JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Payload"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"reference"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"main"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>Bunch</code> describes all items which belong to a project. The <code>Processor</code> will use the bunches to decide which product he will create. Multiple bunches may belong to a project. They represent one logical part of a project. In case of a photo book the page count could be determined based on the count and variety of the bunches and it&#39;s <a href="#bunchitem">BunchItems</a></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>project</td>
+<td>string</td>
+<td>M</td>
+<td>Identifier of the project this bunch belongs to</td>
+</tr>
+<tr>
+<td>items</td>
+<td>array</td>
+<td>M</td>
+<td>Array of <code>BunchItems</code>-subresources. See <a href="#bunchitem">BunchItem</a> for more details</td>
+</tr>
+</tbody></table>
+<h3 id='bunchitem'>BunchItem</h3>
+<p>A <code>BunchItem</code> is a subpart of a <code>Bunch</code>. While one <code>BunchItem</code> could consist of a photograph, another could add a title string or some cliparts to be rendered ontop of the photograph. For binary data <code>BunchItems</code> just &quot;link&quot; to items of <a href="#payload">Payload</a>. They may reference to network content as well (see <code>type</code> parameter), which has to be downloaded upon processing.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>M</td>
+<td>Describes the type of this item. May be one of &#39;Payload&#39;, &#39;Url&#39; or (direct) &#39;Text&#39;</td>
+</tr>
+<tr>
+<td>mimetype</td>
+<td>string</td>
+<td>M</td>
+<td>Must be provided as <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">RFC6838</a></td>
+</tr>
+<tr>
+<td>reference</td>
+<td>string</td>
+<td>M</td>
+<td>The &#39;body&#39; of this item. Describes filename, url or content depending on the type parameter.</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>map</td>
+<td>M</td>
+<td>Optional metadata in a free key-value manner (e.g. tags, descriptors, significance)</td>
+</tr>
+</tbody></table>
+<h3 id='payload'>Payload</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"mimetype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/zip"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1.zip"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>Payload</code> describes one file in the <a href="#finalizeorder">finally posted</a> zip file. In difference to a <code>BunchItems</code> a <code>Payload</code> has no direct connection to a <code>Project</code>. This decoupling enables shared resources. As duplicate filenames within a zip file are not allowd there won&#39;t be 2 <code>Payloads</code> with the same name.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>mimetype</td>
+<td>string</td>
+<td>M</td>
+<td>Must be provided as <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">RFC6838</a></td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>M</td>
+<td>The file name</td>
+</tr>
+</tbody></table>
+<h3 id='cart'>Cart</h3>
+<blockquote>
+<p>Cart and Subcart JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"subcarts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">811</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"paymentOrderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"333-1111111-2222222"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"producer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allcop"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"producerOrderId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"producerOrderUniqueIdentifier"</span><span class="p">:</span><span class="w"> </span><span class="s2">"944400123456"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"qos"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Standard"</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"shipping"</span><span class="p">:</span><span class="w"> </span><span class="mi">3450</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> 
+          </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mi">14230</span><span class="p">,</span><span class="w"> 
+          </span><span class="s2">"processorIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> 
+          </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w"> 
+          </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14621100"</span><span class="w">
+        </span><span class="p">}</span><span class="w"> 
+      </span><span class="p">],</span><span class="w">
+      </span><span class="s2">"voucher"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AMZNMutti"</span><span class="p">,</span><span class="w"> 
+        </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amazon Gutschein"</span><span class="p">,</span><span class="w"> 
+        </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">7530</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>Cart</code> encapsulate one or more <a href="#subcart">Subcarts</a>. In the latter case multiple producers are involved who ship their goods separately to the customer. Therefore each producer or even more specific each producer&#39;s place of production leads to a separate Subcart. Each <code>Subcart</code> is treated as a separate suborder, while the <a href="#payment">Payment</a> applies to all of them. Since the mandator is responsible for price management shipping has to be provided by the mandator and not by the server.</p>
+<h3 id='subcart'>Subcart</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>orderId</td>
+<td>number</td>
+<td>S</td>
+<td>Unique id</td>
+</tr>
+<tr>
+<td>paymentOrderId</td>
+<td>string</td>
+<td>M</td>
+<td>Domain and mandator specific identifier. May be mapped to an external shopsystem (Shopify, Amazon, Ebay)</td>
+</tr>
+<tr>
+<td>producer</td>
+<td>string</td>
+<td>S</td>
+<td>The producer. Currently only <code>Allcop</code></td>
+</tr>
+<tr>
+<td>producerOrderId</td>
+<td>string</td>
+<td>S</td>
+<td>The unique id in the producers name- and numberingspace</td>
+</tr>
+<tr>
+<td>producerOrderUniqueIdentifier</td>
+<td>string</td>
+<td>S</td>
+<td>Optional identifier for special mappings (used in <code>Allcop</code> status files)</td>
+</tr>
+<tr>
+<td>qos</td>
+<td>string</td>
+<td>M</td>
+<td>Quality of service. One of <code>Standard</code> or <code>Express</code></td>
+</tr>
+<tr>
+<td>shipping</td>
+<td>number</td>
+<td>M</td>
+<td>Shipping costs in tenth of minor units</td>
+</tr>
+<tr>
+<td>items</td>
+<td>array</td>
+<td>S</td>
+<td>Array of `SubcartItem&#39;-subresources. See <a href="#subcartitem">SubcartItem</a> for more details</td>
+</tr>
+<tr>
+<td>voucher</td>
+<td>voucher</td>
+<td>M</td>
+<td>See <a href="#voucher">Voucher</a> for mode details</td>
+</tr>
+</tbody></table>
+<h3 id='subcartitem'>SubcartItem</h3>
+<blockquote>
+<p>SubcartItem JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mi">14230</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"processorIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"project"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom1"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"sku"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14621100"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>SubcartItem</code> describes cart item with the same meaning as in related cart / checkout systems.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>count</td>
+<td>number</td>
+<td>S</td>
+<td>Count of this item</td>
+</tr>
+<tr>
+<td>price</td>
+<td>number</td>
+<td>M</td>
+<td>Item price in tenth of minor units</td>
+</tr>
+<tr>
+<td>processorIndex</td>
+<td>number</td>
+<td>S</td>
+<td>Index of this item within its project / processor&#39;s space. The processor determines n products which lead to separate SubcartItems. This determination is fixed and reproducable. To identify the items later on the incrementing index is assigned in order of appearance.</td>
+</tr>
+<tr>
+<td>project</td>
+<td>string</td>
+<td>S</td>
+<td>Reference to the project&#39;s identifier</td>
+</tr>
+<tr>
+<td>sku</td>
+<td>string</td>
+<td>S</td>
+<td>Stock keeping unit which donates a specific product (e.g. 20 page, 10x10cm, softcover, pure photobook)</td>
+</tr>
+</tbody></table>
+<h3 id='voucher'>Voucher</h3>
+<blockquote>
+<p>Voucher JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AMZNMutti"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amazon Gutschein"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">7530</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>A <code>Voucher</code> describes the discount to be applied to a <code>Subcart</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>code</td>
+<td>string</td>
+<td>C</td>
+<td>The code the user entered during the checkout</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td>M</td>
+<td>Human readable description. May be printed on the invoice</td>
+</tr>
+<tr>
+<td>value</td>
+<td>string</td>
+<td>M</td>
+<td>Absolute amount of discount in tenth of minor units</td>
+</tr>
+</tbody></table>
+<h3 id='payment'>Payment</h3>
+<blockquote>
+<p>Payment JSON</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amazon"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"orderid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"333-2222222-111111"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>Payment</code> contains all information which refer to the order&#39;s payment. If something like authorize and capture is used, the involved ids and receipts are saved within this node.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Originating Role</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>provider</td>
+<td>string</td>
+<td>M</td>
+<td>The type of payment. Currently onle <code>Amazon</code> is supported. <code>Advance</code>, <code>Invoice</code>, <code>Paypal</code>, <code>Paypal Authorize and Capture</code> and <code>Stripe</code> are planned as well.</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>map</td>
+<td>M</td>
+<td>Optional metadata in a free key-value manner (e.g. ids, tokens, flags)</td>
 </tr>
 </tbody></table>
 <h2 id='create-order'>Create Order</h2>
