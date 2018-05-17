@@ -1,57 +1,57 @@
-participant Series-App
-participant Series-Appserver
-participant ToPhoto-API
-participant ToPhoto-Worker
-participant Fotobox-Processor\n(Series)
-participant ProducerDelegateFrontend
-participant ProducerDelegate1
-Series-App->+Series-Appserver: Füge Serie X als Fotobox und \n10x10-RZ-Fotobuch in Warenkorb 
-alt Neuer Warenkorb 
-Series-Appserver->Series-Appserver: Start Warenkorb-Session
-else Bestehender Warenkorb
-Series-Appserver->Series-Appserver: Merge Warenkorb-Inhalte
+participant Series-App as sApp
+participant Series-Server as sSrv
+participant ToPhoto-API as tpApi
+participant ToPhoto-Worker as tpWork
+participant Processor as tpProc
+participant ProducerDelegateFrontend as tpDlgFront
+participant ProducerDelegate1 as tpDlg
+
+sApp->+sSrv: add photo series\nto cart (series X)
+
+alt new cart
+    sSrv->sSrv: start cart session
+else existing cart
+    sSrv->sSrv: merge cart positions
 end
-Series-Appserver->Series-Appserver: Erstellung \nOrder-Struktur
-Series-Appserver->+ToPhoto-API: POST / (Order)
-ToPhoto-API->ToPhoto-API: Erzeuge OrderID
-ToPhoto-API->+Fotobox-Processor\n(Series): segment(List<Bunch>, List<Payload>, Serie X (1))
-Fotobox-Processor\n(Series)->-ToPhoto-API: List<SubcartItem>
-ToPhoto-API->+ProducerDelegateFrontend: .segment(List<SubcartItem>)
-ProducerDelegateFrontend->ProducerDelegateFrontend: Segmentiere SKUs \nzu ProducerDelegates
-ProducerDelegateFrontend->+ProducerDelegate1: segment(List<SubcartItem>)
-ProducerDelegate1->-ProducerDelegateFrontend: List<Subcart>
-ProducerDelegateFrontend->-ToPhoto-API: List<Subcart>
-ToPhoto-API->-Series-Appserver: Order
 
-Series-Appserver->Series-Appserver: Ermittle Preise \nfür Subcarts
-Series-Appserver->-Series-App: Warenkorb
-Series-App->+Series-Appserver: Checkout\n(Adresse, Zahlungsinformationen)
-Series-Appserver->Series-Appserver: Anreichern \nder Order-Struktur\nmit Adressen etc.
-Series-Appserver->+ToPhoto-API: POST /checkout (Order)
-ToPhoto-API->ToPhoto-API: Update Order
-ToPhoto-API->-Series-Appserver: OrderID
-Series-Appserver->Series-Appserver: payload.zip mit \nFotos etc.
-Series-Appserver->+ToPhoto-API: POST /data (payload.zip)
-ToPhoto-API->ToPhoto-API: Speichere Order \nauf Platte
+sSrv->sSrv: build order
+sSrv->+tpApi: POST `/v1/orders`
+tpApi->tpApi: generate OrderID
+tpApi->+tpProc: segment(List<Bunch>, List<Payload>, series X (1))
+tpProc->-tpApi: List<SubcartItem>
+tpApi->+tpDlgFront: .segment(List<SubcartItem>)
+tpDlgFront->tpDlgFront: segment SKUs \nto ProducerDelegates
+tpDlgFront->+tpDlg: segment(List<SubcartItem>)
+tpDlg->-tpDlgFront: List<Subcart>
+tpDlgFront->-tpApi: List<Subcart>
+tpApi->-sSrv: Order
+sSrv->sSrv: calculate prices\nfor subcarts
+sSrv->-sApp: cart
 
-ToPhoto-API->+ProducerDelegateFrontend: .generateOrderId(Subcart, Order)
-ProducerDelegateFrontend->+ProducerDelegate1: .generateOrderId(Order)
-ProducerDelegate1->-ProducerDelegateFrontend: OrderID
-ProducerDelegateFrontend->-ToPhoto-API: OrderID
+sApp->+sSrv: checkout\n(address, payment)
+sSrv->sSrv: enrich order\naddresses etc.
+sSrv->+tpApi: POST /v1/orders/:orderid/checkout
+tpApi->tpApi: Update Order
+tpApi->-sSrv: Order
+sSrv->sSrv: payload.zip with\nphotos etc.
+sSrv->+tpApi: POST /v1/orders/:orderid/data
+tpApi->tpApi: save Order\nto disk
 
+tpApi->+tpDlgFront: .generateOrderId(Subcart, Order)
+tpDlgFront->+tpDlg: .generateOrderId(Order)
+tpDlg->-tpDlgFront: ProducerOrderID
+tpDlgFront->-tpApi: ProducerOrderID
 
+tpApi->tpApi: save Order\nto Mongo-DB
+tpApi-->+tpWork:
+tpApi->-sSrv: Order
+sSrv->sSrv: save Series-Order\n(ToPhoto-OrderID\n+ payment info)
+sSrv->-sApp: OrderID
 
-ToPhoto-API->ToPhoto-API: Speichere Order \nin Mongo-DB
-ToPhoto-API-->+ToPhoto-Worker:
-ToPhoto-API->-Series-Appserver: OrderID
-Series-Appserver->Series-Appserver: Abspeichern Series-Order\n(ToPhoto-OrderID \n+ Zahlungsinformationen)
-Series-Appserver->-Series-App: OrderID
-
-ToPhoto-Worker->+Fotobox-Processor\n(Series): process(List<Bunch>, List<Payload>, Serie X (1))
-Fotobox-Processor\n(Series)->Fotobox-Processor\n(Series): Layout + Render
-Fotobox-Processor\n(Series)->-ToPhoto-Worker: List<Output>
-ToPhoto-Worker->+ProducerDelegate1: export(Subcart, Order, List<Output>)
-ProducerDelegate1->ProducerDelegate1: Abspeichern + Misc.
-ProducerDelegate1->-ToPhoto-Worker:
-ToPhoto-Worker->ToPhoto-Worker: Verschieben Orderdaten\nin Archiv
-
+tpWork->+tpProc: process(List<Bunch>, List<Payload>, series X (1))
+tpProc->tpProc: layout + render
+tpProc->-tpWork: List<Output>
+tpWork->+tpDlg: export(Subcart, Order, List<Output>)
+tpDlg->tpDlg: save + misc.
+tpDlg->-tpWork:
+tpWork->tpWork: move order\ndata to archiv
