@@ -10,6 +10,8 @@ In this example workflow we use Series as the showcase. Series is a mobile App, 
 
 <%= diagram('singlesubcart.wsd') %>
 
+At a given time the App will start the checkout process. 
+
 ## Roles
 
 3 roles are distinguished throughout this documentation.

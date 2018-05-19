@@ -457,9 +457,40 @@ html, body {
     @extend %code-font;
   }
 
-  pre>code {
-    background-color: transparent;
-    padding: 0;
+  pre {
+    position: relative;
+
+    > code {
+      background-color: transparent;
+      padding: 0;
+
+      max-height: 8 * 1.5em;
+      display: block;
+      overflow-y: hidden;
+    }
+
+    &.fold {
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(#fff, 0.3);
+      }
+
+      &.unfolded {
+        &:before {
+          content: none;
+          background: transparent;
+        }
+
+        > code {
+          max-height: none;
+        }
+      }
+    }
   }
 
   aside {

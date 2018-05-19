@@ -14,3 +14,17 @@ $(function() {
 window.onpopstate = function() {
   activateLanguage(getLanguageFromQueryString());
 };
+
+$(function() {
+  $(".content pre > code").each(function () {
+    $this = $(this);
+  
+    if (this.offsetHeight < this.scrollHeight) {
+      $this.parent().addClass("fold");
+    }
+  });
+
+  $(".fold").click(function() {
+    $(this).addClass("unfolded");
+  });
+});
