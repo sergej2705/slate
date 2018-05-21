@@ -477,7 +477,8 @@ html, body {
         right: 0;
         bottom: 0;
         left: 0;
-        background-color: rgba(#fff, 0.3);
+        //background-color: rgba(#fff, 0.3);
+        background-image: url(../images/code_fold_overlay.png);
       }
 
       &.unfolded {

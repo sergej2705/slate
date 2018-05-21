@@ -25,6 +25,11 @@ $(function() {
   });
 
   $(".fold").click(function() {
-    $(this).addClass("unfolded");
+    if ($(this).hasClass("unfolded")) {
+      $(this).removeClass("unfolded");
+    } else {
+      $(this).addClass("unfolded");
+    }
   });
+
 });
