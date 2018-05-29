@@ -16,7 +16,7 @@ The App gives a `segment` order to the to.photo API via the Series server. This 
 
 The Series server now defines the cart value depending on the product(s) with it's own price logics and delivers this information back to the App. The App shows the cart to the customer ans initiates the checkout by request, here the address data will be collected and the payment processed. This data will also be sent to the API. Finally the Series server will send a `finalize` order to the API (upload all images and additional data in a single ZIP archive). The API will unzip the archive, verifies the order and saves it to the hard drive and the database. Additionally while finalization production specific `OrderID`s will be allocated. In the end the order is queued for the asynchronous rendering process.
 
-The API returns the generated order. The App acknowledges the successful order placement, the server processes the payment and the order is finished.
+The API returns the generated order. The App acknowledges the successful order placement, the App server processes the payment and the order is finished.
 
 ## Roles
 
