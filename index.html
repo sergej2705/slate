@@ -313,7 +313,7 @@
 
 <p>The Series server now defines the cart value depending on the product(s) with it&#39;s own price logics and delivers this information back to the App. The App shows the cart to the customer ans initiates the checkout by request, here the address data will be collected and the payment processed. This data will also be sent to the API. Finally the Series server will send a <code>finalize</code> order to the API (upload all images and additional data in a single ZIP archive). The API will unzip the archive, verifies the order and saves it to the hard drive and the database. Additionally while finalization production specific <code>OrderID</code>s will be allocated. In the end the order is queued for the asynchronous rendering process.</p>
 
-<p>The API returns the generated order. The App acknowledges the successful order placement, the server processes the payment and the order is finished.</p>
+<p>The API returns the generated order. The App acknowledges the successful order placement, the App server processes the payment and the order is finished.</p>
 <h2 id='roles'>Roles</h2>
 <p>3 roles are distinguished throughout this documentation.</p>
 
